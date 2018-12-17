@@ -7,10 +7,10 @@ import koaSend from 'koa-send';
 import Koa from 'koa';
 import Router from 'koa-router';
 
-const app: Koa = new Koa();
-const router: Router = new Router();
+const app = new Koa();
+const router = new Router();
 
-const koaBodyOptions: object = {
+const koaBodyOptions = {
   multipart: true,
   formidable: {
     hash: 'sha1',
@@ -18,11 +18,11 @@ const koaBodyOptions: object = {
   }
 };
 
-router.post('/upload', koaBody(koaBodyOptions), (ctx: Koa.Context) => {
+router.post('/upload', koaBody(koaBodyOptions), (ctx) => {
 
 });
 
-router.get('*', async (ctx: Koa.Context) => {
+router.get('*', async (ctx) => {
   const file = path.join(__dirname, '../../frontend/dist/index.html');
 
   try {
@@ -35,4 +35,4 @@ router.get('*', async (ctx: Koa.Context) => {
 
 app.use(router.routes());
 
-app.listen(8000);
+export default app;

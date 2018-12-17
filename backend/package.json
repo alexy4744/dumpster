@@ -2,19 +2,21 @@
   "name": "dumpster",
   "version": "0.1.0",
   "private": true,
-  "main": "./dist/app.js",
+  "main": "./dist/bin/start.js",
   "scripts": {
     "build": "tsc -p tsconfig.json"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/dotenv": "^6.1.0",
     "@types/koa": "^2.0.47",
     "@types/koa-router": "^7.0.35",
     "@types/koa-send": "^4.1.1",
     "typescript": "^3.2.2"
   },
   "dependencies": {
+    "dotenv": "^6.2.0",
     "koa": "^2.6.2",
     "koa-body": "^4.0.4",
     "koa-router": "^7.4.0",
