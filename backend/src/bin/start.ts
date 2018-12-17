@@ -1,25 +1,25 @@
-import fs from 'fs';
-import http from 'http';
-import https from 'https';
+import fs from "fs";
+import http from "http";
+import https from "https";
 
-import dotenv from 'dotenv';
-import path from 'path';
+import dotenv from "dotenv";
+import path from "path";
 
-import app from '../app';
+import app from "../app";
 
-dotenv.config({ path: path.join(__dirname, '../process.env') });
+dotenv.config({ path: path.join(__dirname, "../process.env") });
 
 const ports = {
-  http: process.env.HTTP || 80,
-  https: process.env.HTTPS || 443
+  http: parseInt(process.env.HTTPS, null) || 80,
+  https: parseInt(process.env.HTTPS, null) || 443
 };
 
 createServer();
 
 async function createServer() {
   const certificates = {
-    key: await fs.promises.readFile('../certs/cert.key').catch(() => null),
-    cert: await fs.promises.readFile('../certs/cert.pem').catch(() => null)
+    key: await fs.promises.readFile("../certs/cert.key").catch(() => null),
+    cert: await fs.promises.readFile("../certs/cert.pem").catch(() => null)
   };
 
   http

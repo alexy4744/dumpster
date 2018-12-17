@@ -13,6 +13,8 @@
     "@types/koa": "^2.0.47",
     "@types/koa-router": "^7.0.35",
     "@types/koa-send": "^4.1.1",
+    "@types/koa-session": "^5.7.4",
+    "@types/mongodb": "^3.1.17",
     "typescript": "^3.2.2"
   },
   "dependencies": {
@@ -20,6 +22,8 @@
     "koa": "^2.6.2",
     "koa-body": "^4.0.4",
     "koa-router": "^7.4.0",
-    "koa-send": "^5.0.0"
+    "koa-send": "^5.0.0",
+    "koa-session": "^5.10.0",
+    "mongodb": "^3.1.10"
   }
 }

@@ -1,5 +1,5 @@
-import { promises, Stats } from 'fs';
-import path from 'path';
+import { promises, Stats } from "fs";
+import path from "path";
 
 const allFiles: string[] = [];
 
@@ -17,7 +17,7 @@ const walker = async (cwd: string, dir: string): Promise<string[]> => {
       if (isDirectory) {
         await walker(cwd, path.join(dir, children));
       } else {
-        allFiles[currentIndex] = `./${path.join(dir, children).replace('\\', '/')}`;
+        allFiles[currentIndex] = `./${path.join(dir, children).replace("\\", "/")}`;
         currentIndex++;
       }
     }
