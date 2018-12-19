@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import Window from "@/components/Paste/Window.vue";
+import Window from "@/components/Desktop/Window.vue";
 import hljs from "highlight.js";
 
 @Component({

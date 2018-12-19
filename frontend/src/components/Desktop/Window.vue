@@ -23,8 +23,8 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import Polyfills from "@/components/Utils/Polyfills.vue";
-import Toolbar from "@/components/Paste/Window/Toolbar.vue";
-import Category from "@/components/Paste/Window/Toolbar/Category.vue";
+import Toolbar from "./Toolbar.vue";
+import Category from "./Toolbar/Category.vue";
 
 @Component({
   components: {
