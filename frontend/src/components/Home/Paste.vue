@@ -1,25 +1,11 @@
 <template>
   <router-link class="no-underline" to="/paste">
-    <div class="flex flex-col justify-center items-center" id="paste">
-      <svg
-        class="paste-file"
-        version="1.1"
-        xmlns="http://www.w3.org/2000/svg"
-        xmlns:xlink="http://www.w3.org/1999/xlink"
-        viewBox="0 0 512 512"
-        width="256px"
-        xml:space="preserve"
-      >
-        <path
-          class="paste-path"
-          d="M352.459,220c0-11.046-8.954-20-20-20h-206c-11.046,0-20,8.954-20,20s8.954,20,20,20h206
-				C343.505,240,352.459,231.046,352.459,220z"
-        ></path>
-        <path
-          class="paste-path"
-          d="M126.459,280c-11.046,0-20,8.954-20,20c0,11.046,8.954,20,20,20H251.57c11.046,0,20-8.954,20-20c0-11.046-8.954-20-20-20
-				H126.459z"
-        ></path>
+    <div class="flex flex-col justify-center items-center" id="paste-button">
+      <svg class="paste-file" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" width="256px" xml:space="preserve">
+        <path class="paste-path" d="M352.459,220c0-11.046-8.954-20-20-20h-206c-11.046,0-20,8.954-20,20s8.954,20,20,20h206
+				C343.505,240,352.459,231.046,352.459,220z"></path>
+        <path class="paste-path" d="M126.459,280c-11.046,0-20,8.954-20,20c0,11.046,8.954,20,20,20H251.57c11.046,0,20-8.954,20-20c0-11.046-8.954-20-20-20
+				H126.459z"></path>
         <path
           class="paste-path"
           d="M173.459,472H106.57c-22.056,0-40-17.944-40-40V80c0-22.056,17.944-40,40-40h245.889c22.056,0,40,17.944,40,40v123
@@ -34,10 +20,7 @@
 				 M333.776,451.768l-40.612,11.25l11.885-39.129l74.089-73.925l28.29,28.29L333.776,451.768z M439.615,346.13l-3.875,3.867
 				l-28.285-28.285l3.862-3.854c7.798-7.798,20.486-7.798,28.284,0C447.399,325.656,447.399,338.344,439.615,346.13z"
         ></path>
-        <path
-          class="paste-path"
-          d="M332.459,120h-206c-11.046,0-20,8.954-20,20s8.954,20,20,20h206c11.046,0,20-8.954,20-20S343.505,120,332.459,120z"
-        ></path>
+        <path class="paste-path" d="M332.459,120h-206c-11.046,0-20,8.954-20,20s8.954,20,20,20h206c11.046,0,20-8.954,20-20S343.505,120,332.459,120z"></path>
       </svg>
 
       <h1 class="paste-text text-center">Create a new paste!</h1>
@@ -55,7 +38,7 @@ export default class Paste extends Vue {}
 <style lang="scss" scoped>
 @import "@/assets/css/colors.scss";
 
-#paste {
+#paste-button {
   background: lighten($background, 5%);
   min-width: 500px;
   min-height: 500px;

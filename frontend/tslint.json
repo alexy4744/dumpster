@@ -18,6 +18,7 @@
     "trailing-comma": false,
     "semicolon": true,
     "eofline": false,
-    "curly": false
+    "curly": false,
+    "max-line-length": false
   }
 }
