@@ -4,7 +4,7 @@
       <div class="window-top-actions flex flex-row">
         <div class="window-top-actions-close" @click="closeWindow"></div>
         <div class="window-top-actions-minimize"></div>
-        <div class="window-top-actions-maximize"></div>
+        <div class="window-top-actions-maximize" @click="changeWindowSize"></div>
       </div>
 
       <span class="window-top-title">Untitled Document</span>
@@ -12,8 +12,8 @@
 
     <Toolbar>
       <Category title="File" :actions="['Save', 'Share']"/>
-      <Category title="View" :actions="['Language', 'Theme']" />
-      <Category title="Help" :actions="['Changelog', 'About']" />
+      <Category title="View" :actions="['Language', 'Theme']"/>
+      <Category title="Help" :actions="['Changelog', 'About']"/>
     </Toolbar>
 
     <textarea spellcheck="false" autofocus></textarea>
@@ -22,9 +22,10 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import Polyfills from "@/components/Utils/Polyfills.vue";
-import Toolbar from "./Toolbar.vue";
-import Category from "./Toolbar/Category.vue";
+import Desktop from "./Desktop.vue";
+import Polyfills from "@/components/Utils/Polyfills.ts";
+import Toolbar from "./Window/Toolbar.vue";
+import Category from "./Window/Toolbar/Category.vue";
 
 @Component({
   components: {
@@ -33,15 +34,51 @@ import Category from "./Toolbar/Category.vue";
   }
 })
 export default class Window extends Vue {
+  private desktop: Desktop = this.$parent as Desktop;
+
   private x: number = 0;
   private y: number = 0;
   private finalX: number = 0;
   private finalY: number = 0;
   private targetWindow: HTMLDivElement | null = null;
 
-  /* Close the window */
+  private isMaximized: boolean = false;
+
   private closeWindow(event: MouseEvent) {
     Polyfills.composedPath(event)[3].remove();
+  }
+
+  private changeWindowSize(event: MouseEvent) {
+    const window = Polyfills.composedPath(event)[3]; // Get the WHOLE window, not just the element that was targetted
+
+    if (!this.isMaximized) {
+      this.expandWindow(window);
+      this.centerWindow(window);
+      this.desktop.dockZIndex(-9999);
+    } else {
+      this.shrinkWindow(window);
+      this.centerWindow(window);
+      this.desktop.dockZIndex(9999);
+    }
+  }
+
+  private expandWindow(window: HTMLDivElement) {
+    window.style.width = "100%";
+    window.style.height = "100%";
+    window.style.maxHeight = "100%";
+    this.isMaximized = true;
+  }
+
+  private shrinkWindow(window: HTMLDivElement) {
+    window.style.width = "initial";
+    window.style.height = "initial";
+    window.style.maxHeight = "calc(100vh - 10vh)"; // 10vh is dock height
+    this.isMaximized = false;
+  }
+
+  private centerWindow(window: HTMLDivElement) {
+    window.style.top = "50%";
+    window.style.left = "50%";
   }
 
   /* Handle window movement/dragging
@@ -63,9 +100,9 @@ export default class Window extends Vue {
   }
 
   private moveWindow(event: MouseEvent) {
-    if (!this.targetWindow) return;
-
     event.preventDefault();
+
+    if (!this.targetWindow) return;
 
     this.finalX = this.x - event.clientX;
     this.finalY = this.y - event.clientY;
@@ -73,8 +110,8 @@ export default class Window extends Vue {
     this.x = event.clientX;
     this.y = event.clientY;
 
-    this.targetWindow.style.top = this.targetWindow.offsetTop - this.finalY + "px";
-    this.targetWindow.style.left = this.targetWindow.offsetLeft - this.finalX + "px";
+    this.targetWindow.style.top = `${this.targetWindow.offsetTop - this.finalY}px`;
+    this.targetWindow.style.left = `${this.targetWindow.offsetLeft - this.finalX}px`;
   }
 
   private stopDragging() {
@@ -94,9 +131,8 @@ export default class Window extends Vue {
   resize: both;
   overflow: hidden;
   min-height: 200px;
-  max-height: 80vh;
+  max-height: calc(100% - 10vh); // 12vh is dock height
   min-width: 375px;
-  max-width: 95vw;
   height: 80%;
   width: 80%;
   position: absolute;

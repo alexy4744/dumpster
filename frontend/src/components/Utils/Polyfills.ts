@@ -1,10 +1,4 @@
-<script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-
-@Component
-export default class Polyfills extends Vue {
-  // Polyfill for Event.path
-  // https://stackoverflow.com/questions/39245488/event-path-undefined-with-firefox-and-vue-js
+export default class Polyfills {
   public static composedPath(event: any) {
     const nativePath = event.path || (event.composedPath && event.composedPath());
     if (nativePath) return nativePath;
@@ -27,4 +21,3 @@ export default class Polyfills extends Vue {
     }
   }
 }
-</script>

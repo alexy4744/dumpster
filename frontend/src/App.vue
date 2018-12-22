@@ -8,7 +8,7 @@
 import { Component, Vue } from "vue-property-decorator";
 
 @Component
-export default class Home extends Vue {}
+export default class App extends Vue {}
 </script>
 
 <style lang="scss">
@@ -16,6 +16,7 @@ export default class Home extends Vue {}
 
 body {
   background-color: $background;
+  overflow: auto;
 }
 
 #app {
