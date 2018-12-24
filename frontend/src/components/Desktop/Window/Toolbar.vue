@@ -12,7 +12,7 @@ export default class Toolbar extends Vue {
   public currentlyOpenedListCategory: HTMLSpanElement | null = null;
   public currentlyOpenedList: HTMLDivElement | null = null;
 
-  public mounted() {
+  public mounted(): void {
     document.onclick = (event: any) => {
       // If the clicked element was the list category then just ignore it.
       if (this.currentlyOpenedListCategory && event.target === this.currentlyOpenedListCategory) return;
@@ -21,7 +21,7 @@ export default class Toolbar extends Vue {
     };
   }
 
-  public toggleList(event: any) {
+  public toggleList(event: any): void {
     const list: HTMLDivElement | null = event.target.nextSibling;
     if (!list) return;
 
@@ -31,7 +31,7 @@ export default class Toolbar extends Vue {
     this.openList(event.target, list);
   }
 
-  public openList(listCategory: any, list: HTMLDivElement) {
+  public openList(listCategory: any, list: HTMLDivElement): void {
     list.style.overflow = "visible";
     listCategory.classList.add("window-toolbar-category-title-active");
 
@@ -39,7 +39,7 @@ export default class Toolbar extends Vue {
     this.currentlyOpenedList = list;
   }
 
-  public closeList(list: HTMLDivElement) {
+  public closeList(list: HTMLDivElement): void {
     if (!this.currentlyOpenedListCategory) return;
 
     list.style.overflow = "hidden";

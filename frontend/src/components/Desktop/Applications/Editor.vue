@@ -1,5 +1,5 @@
 <template>
-  <div id="desktop-dock" ref="dock">
+  <div id="desktop-dock">
     
   </div>
 </template>
@@ -8,11 +8,8 @@
 import { Component, Vue } from "vue-property-decorator";
 
 @Component
-export default class Dock extends Vue {
-  public dockZIndex(zIndex: number): void {
-    if (!this.$refs.dock) return;
-    (this.$refs.dock as HTMLDivElement).style.zIndex = String(zIndex);
-  }
+export default class Editor extends Vue {
+
 }
 </script>
 

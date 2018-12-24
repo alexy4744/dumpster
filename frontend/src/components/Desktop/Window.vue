@@ -2,7 +2,7 @@
   <div class="window">
     <div class="window-top" @mousemove="mouseDownOnWindow">
       <div class="window-top-actions flex flex-row">
-        <div class="window-top-actions-close" @click="closeWindow"></div>
+        <div class="window-top-actions-close" @click="close"></div>
         <div class="window-top-actions-minimize"></div>
         <div class="window-top-actions-maximize" @click="changeWindowSize"></div>
       </div>
@@ -21,8 +21,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import Desktop from "./Desktop.vue";
+import { Component, Prop, Vue } from "vue-property-decorator";
+import Desktop from "../Desktop.vue";
 import Polyfills from "@/components/Utils/Polyfills.ts";
 import Toolbar from "./Window/Toolbar.vue";
 import Category from "./Window/Toolbar/Category.vue";
@@ -34,7 +34,10 @@ import Category from "./Window/Toolbar/Category.vue";
   }
 })
 export default class Window extends Vue {
-  private desktop: Desktop = this.$parent as Desktop;
+  @Prop() public readonly id!: number;
+
+  /* The parent of the parent is the desktop, since window is a container, and the container is a children of desktop */
+  private desktop: Desktop = this.$parent.$parent as Desktop;
 
   private x: number = 0;
   private y: number = 0;
@@ -44,39 +47,41 @@ export default class Window extends Vue {
 
   private isMaximized: boolean = false;
 
-  private closeWindow(event: MouseEvent) {
-    Polyfills.composedPath(event)[3].remove();
+  public close(): void {
+    this.$store.dispatch("windows/close", this.id); // Remove it from the store
+    this.$el.remove(); // Then remove it from the DOM
+    this.$destroy(); // Finally destroy the component
   }
 
-  private changeWindowSize(event: MouseEvent) {
+  private changeWindowSize(event: MouseEvent): void {
     const window = Polyfills.composedPath(event)[3]; // Get the WHOLE window, not just the element that was targetted
+
+    this.centerWindow(window);
 
     if (!this.isMaximized) {
       this.expandWindow(window);
-      this.centerWindow(window);
-      this.desktop.dockZIndex(-9999);
+      this.desktop.dock.dockZIndex(-9999);
     } else {
       this.shrinkWindow(window);
-      this.centerWindow(window);
-      this.desktop.dockZIndex(9999);
+      this.desktop.dock.dockZIndex(9999);
     }
   }
 
-  private expandWindow(window: HTMLDivElement) {
+  private expandWindow(window: HTMLDivElement): void {
     window.style.width = "100%";
     window.style.height = "100%";
     window.style.maxHeight = "100%";
     this.isMaximized = true;
   }
 
-  private shrinkWindow(window: HTMLDivElement) {
+  private shrinkWindow(window: HTMLDivElement): void {
     window.style.width = "initial";
     window.style.height = "initial";
     window.style.maxHeight = "calc(100vh - 10vh)"; // 10vh is dock height
     this.isMaximized = false;
   }
 
-  private centerWindow(window: HTMLDivElement) {
+  private centerWindow(window: HTMLDivElement): void {
     window.style.top = "50%";
     window.style.left = "50%";
   }
@@ -84,12 +89,12 @@ export default class Window extends Vue {
   /* Handle window movement/dragging
    * https://www.w3schools.com/howto/howto_js_draggable.asp
    */
-  private mouseDownOnWindow(event: any) {
+  private mouseDownOnWindow(event: any): void {
     this.targetWindow = Polyfills.composedPath(event)[1]; // Get the WHOLE window element
     event.target.onmousedown = this.dragWindow;
   }
 
-  private dragWindow(event: MouseEvent) {
+  private dragWindow(event: MouseEvent): void {
     event.preventDefault();
 
     this.x = event.clientX;
@@ -99,7 +104,7 @@ export default class Window extends Vue {
     document.onmousemove = this.moveWindow;
   }
 
-  private moveWindow(event: MouseEvent) {
+  private moveWindow(event: MouseEvent): void {
     event.preventDefault();
 
     if (!this.targetWindow) return;
@@ -114,7 +119,7 @@ export default class Window extends Vue {
     this.targetWindow.style.left = `${this.targetWindow.offsetLeft - this.finalX}px`;
   }
 
-  private stopDragging() {
+  private stopDragging(): void {
     document.onmouseup = null;
     document.onmousemove = null;
   }
@@ -131,7 +136,7 @@ export default class Window extends Vue {
   resize: both;
   overflow: hidden;
   min-height: 200px;
-  max-height: calc(100% - 10vh); // 12vh is dock height
+  max-height: calc(100% - 10vh - 5vh); // 10vh is dock height, 5vh is menubar height
   min-width: 375px;
   height: 80%;
   width: 80%;

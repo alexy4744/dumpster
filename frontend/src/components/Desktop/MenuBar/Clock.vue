@@ -7,7 +7,7 @@ import { Component, Vue } from "vue-property-decorator";
 
 @Component
 export default class Clock extends Vue {
-  public mounted() {
+  public mounted(): void {
     this.setTime();
     setInterval(() => this.setTime(), 1000);
   }

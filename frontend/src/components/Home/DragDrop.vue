@@ -39,11 +39,11 @@ import { Component, Vue } from "vue-property-decorator";
 
 @Component
 export default class Uploader extends Vue {
-  private dropped(event: Event) {
+  private dropped(event: Event): void {
     this.disableDragOver(event);
   }
 
-  private cleanDropZone(event: any) {
+  private cleanDropZone(event: any): void {
     if (event.dataTransfer.items) {
       event.dataTransfer.items.clear();
     } else {
@@ -52,7 +52,7 @@ export default class Uploader extends Vue {
   }
 
   // Disable default drag behavior
-  private disableDragOver(event: Event) {
+  private disableDragOver(event: Event): void {
     event.preventDefault();
   }
 }

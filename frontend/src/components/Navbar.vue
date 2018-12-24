@@ -52,24 +52,24 @@ export default class NavBar extends Vue {
   private expanded: boolean = false;
   private links: HTMLElement | null = null;
 
-  public mounted() {
+  public mounted(): void {
     this.links = document.getElementById("nav-links");
   }
 
-  private menuOnClick() {
+  private menuOnClick(): void {
     if (this.expanded) this.collapse();
     else this.expand();
 
     this.expanded = !this.expanded;
   }
 
-  private expand() {
+  private expand(): void {
     if (!this.links) return;
     this.links.classList.remove("closed");
     this.links.classList.add("opened");
   }
 
-  private collapse() {
+  private collapse(): void {
     if (!this.links) return;
     this.links.classList.remove("opened");
     this.links.classList.add("closed");
