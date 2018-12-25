@@ -18,10 +18,11 @@ export default class Dock extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/css/colors.scss";
+@import "@/assets/css/dock.scss";
 
 #desktop-dock {
   width: 80vw;
-  height: 10vh;
+  height: $dockHeight;
   position: fixed;
   background-color: lighten($background, 25%);
   opacity: 0.25;

@@ -6,7 +6,7 @@ import State from "../../interfaces/State";
 
 const state: State = {
   windows: new Map(),
-  totalWindows: 1
+  totalWindows: 0
 };
 
 export default {

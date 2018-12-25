@@ -3,11 +3,11 @@ import Window from "@/components/Desktop/Window.vue";
 
 export default {
   createNewWindow(state: State, window: Window): void {
-    state.windows.set(state.totalWindows, window);
+    state.windows.set(String(state.totalWindows), window);
     state.totalWindows++;
   },
 
-  removeWindow(state: State, windowId: number): void {
+  removeWindow(state: State, windowId: string): void {
     state.windows.delete(windowId);
     state.totalWindows--;
   },

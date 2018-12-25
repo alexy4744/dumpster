@@ -1,5 +1,7 @@
 <template>
-  <div id="desktop-windows" ref="windows"></div>
+  <div id="desktop-windows" ref="windows">
+    <slot></slot>
+  </div>
 </template>
 
 <script lang="ts">
@@ -14,19 +16,8 @@ export default class WindowContainer extends Vue {
     return this.$store.state.windows.totalWindows;
   }
 
-  public mounted(): void {
-    this.newWindow();
-  }
-
-  public newWindow(): void {
-    const window: Window = new Window({
-      /* Must past parent when manually mounting to retrive parent and store
-        https://forum.vuejs.org/t/this-store-undefined-in-manually-mounted-vue-component/8756 */
-      parent: this,
-      propsData: {
-        id: this.totalWindows
-      }
-    }).$mount();
+  public newWindow(window: Window): void {
+    window.$mount();
 
     this.$store.dispatch("windows/newWindow", window);
     (this.$refs.windows as HTMLDivElement).appendChild(window.$el);
@@ -43,8 +34,4 @@ export default class WindowContainer extends Vue {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-
-</style>
 

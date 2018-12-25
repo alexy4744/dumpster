@@ -24,10 +24,11 @@ export default class MenuBar extends Vue {
 
 <style lang="scss" scoped>
 @import "@/assets/css/colors.scss";
+@import "@/assets/css/menubar.scss";
 
 #desktop-menu-bar {
   width: 100vw;
-  height: 5vh;
+  height: $menubarHeight;
   position: fixed;
   background-color: lighten($background, 25%);
   // opacity: 0.5;

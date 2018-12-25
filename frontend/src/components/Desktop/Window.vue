@@ -7,16 +7,10 @@
         <div class="window-top-actions-maximize" @click="changeWindowSize"></div>
       </div>
 
-      <span class="window-top-title">Untitled Document</span>
+      <span class="window-top-title">{{ title }}</span>
     </div>
 
-    <Toolbar>
-      <Category title="File" :actions="['Save', 'Share']"/>
-      <Category title="View" :actions="['Language', 'Theme']"/>
-      <Category title="Help" :actions="['Changelog', 'About']"/>
-    </Toolbar>
-
-    <textarea spellcheck="false" autofocus></textarea>
+    <slot></slot>
   </div>
 </template>
 
@@ -34,10 +28,11 @@ import Category from "./Window/Toolbar/Category.vue";
   }
 })
 export default class Window extends Vue {
-  @Prop() public readonly id!: number;
+  @Prop({ default: "Blank Application" }) public title?: string;
+  private id: number = this.$store.state.windows.totalWindows;
 
   /* The parent of the parent is the desktop, since window is a container, and the container is a children of desktop */
-  private desktop: Desktop = this.$parent.$parent as Desktop;
+  private desktop: Desktop = this.$parent.$parent.$parent as Desktop;
 
   private x: number = 0;
   private y: number = 0;
@@ -128,6 +123,9 @@ export default class Window extends Vue {
 
 <style scoped lang="scss">
 @import "@/assets/css/colors.scss";
+@import "@/assets/css/dock.scss";
+@import "@/assets/css/menubar.scss";
+@import "@/assets/css/window.scss";
 
 .window {
   background: lighten($background, 5%);
@@ -136,7 +134,7 @@ export default class Window extends Vue {
   resize: both;
   overflow: hidden;
   min-height: 200px;
-  max-height: calc(100% - 10vh - 5vh); // 10vh is dock height, 5vh is menubar height
+  max-height: calc(100% - $dockHeight - $menubarHeight); // 10vh is dock height, 5vh is menubar height
   min-width: 375px;
   height: 80%;
   width: 80%;
@@ -200,17 +198,4 @@ export default class Window extends Vue {
 
 .window-top-actions-maximize { background-color: #00ca61; }
 .window-top-actions-maximize:hover { background-color: darken(#00ca61, 7%); }
-
-textarea {
-  width: 100%;
-  height: calc(100% - 25px - 66px); // Remove the top bar(66px) and toolbar(25px) from the height
-  background: inherit;
-  color: white;
-  padding-top: 10px;
-  padding-bottom: 25px;
-  padding-left: 25px;
-  padding-right: 25px;
-  outline: none !important;
-  resize: none;
-}
 </style>

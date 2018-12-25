@@ -52,10 +52,12 @@ export default class Toolbar extends Vue {
 </script>
 
 <style lang="scss" scoped>
+@import "@/assets/css/window.scss";
+
 .window-toolbar {
   display: flex;
   flex-direction: row;
-  height: 25px;
+  height: $toolbarHeight;
   margin: 0 15px;
 }
 </style>

@@ -19,6 +19,7 @@
     "semicolon": true,
     "eofline": false,
     "curly": false,
-    "max-line-length": false
+    "max-line-length": false,
+    "no-console": false
   }
 }

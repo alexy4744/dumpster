@@ -26,7 +26,7 @@
     </div>
 
     <video id="bonk-video" controls>
-      <source src="@/../public/videos/bonked.mp4" type="video/mp4">Your browser is missing out of a really funny video
+      <source src="@/assets/videos/bonked.mp4" type="video/mp4">Your browser is missing out on a really funny video
     </video>
   </div>
 </template>
