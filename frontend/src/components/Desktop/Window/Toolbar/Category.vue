@@ -3,9 +3,7 @@
     <span class="window-toolbar-category-title" @click="this.$parent.toggleList">{{ title }}</span>
 
     <div class="window-toolbar-category-list">
-      <template v-for="action of actions">
-        <span :key="action" class="window-toolbar-category-list-action">{{ action }}</span>
-      </template>
+      <slot></slot>
     </div>
   </div>
 </template>
@@ -16,7 +14,6 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 @Component
 export default class Category extends Vue {
   @Prop(String) public title!: string;
-  @Prop(Array) public actions!: string[];
 }
 </script>
 
@@ -60,15 +57,6 @@ export default class Category extends Vue {
   .window-toolbar-category-title {
     background-color: white;
   }
-}
-
-.window-toolbar-category-list-action {
-  background-color: $background;
-  cursor: pointer;
-}
-
-.window-toolbar-category-list-action:hover {
-  background-color: darken($background, 2%);
 }
 </style>
 

@@ -20,6 +20,7 @@ import Desktop from "../Desktop.vue";
 import Polyfills from "@/components/Utils/Polyfills.ts";
 import Toolbar from "./Window/Toolbar.vue";
 import Category from "./Window/Toolbar/Category.vue";
+import Dock from "./Dock.vue";
 
 @Component({
   components: {
@@ -28,7 +29,7 @@ import Category from "./Window/Toolbar/Category.vue";
   }
 })
 export default class Window extends Vue {
-  @Prop({ default: "Blank Application" }) public title?: string;
+  @Prop({ default: "Blank Window" }) public title?: string;
   private id: number = this.$store.state.windows.totalWindows;
 
   /* The parent of the parent is the desktop, since window is a container, and the container is a children of desktop */
@@ -55,10 +56,10 @@ export default class Window extends Vue {
 
     if (!this.isMaximized) {
       this.expandWindow(window);
-      this.desktop.dock.dockZIndex(-9999);
+      (this.desktop.$refs.dock as Dock).dockZIndex(-9999);
     } else {
       this.shrinkWindow(window);
-      this.desktop.dock.dockZIndex(9999);
+      (this.desktop.$refs.dock as Dock).dockZIndex(9999);
     }
   }
 
@@ -70,8 +71,8 @@ export default class Window extends Vue {
   }
 
   private shrinkWindow(window: HTMLDivElement): void {
-    window.style.width = "initial";
-    window.style.height = "initial";
+    window.style.width = "var(--min-width)";
+    window.style.height = "var(--min-height)";
     window.style.maxHeight = "var(--max-height)"; // 10vh is dock height, 5vh is menubar height
     this.isMaximized = false;
   }
@@ -128,6 +129,8 @@ export default class Window extends Vue {
 @import "@/assets/css/window.scss";
 
 .window {
+  --min-height: 200px;
+  --min-width: 375px;
   --max-height: calc(100% - #{$dockHeight} - #{$menubarHeight});
 
   background: lighten($background, 5%);
@@ -138,8 +141,8 @@ export default class Window extends Vue {
   min-height: 200px;
   max-height: var(--max-height);
   min-width: 375px;
-  height: 75%;
-  width: 90%;
+  height: 50%; // Initial height
+  width: 50%; // Initial width
   position: absolute;
   top: 50%;
   left: 50%;

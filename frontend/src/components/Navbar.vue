@@ -36,7 +36,7 @@
         </button>
       </div>
 
-      <div class="flex-row overflow-hidden closed md:overflow-visible md:ml-auto md:flex" id="nav-links">
+      <div class="flex-row overflow-hidden closed md:overflow-visible md:ml-auto md:flex" id="nav-links" ref="navLinks">
         <router-link to="/upload">Upload</router-link>
         <router-link to="/paste">Paste</router-link>
       </div>
@@ -50,11 +50,7 @@ import { Component, Vue } from "vue-property-decorator";
 @Component
 export default class NavBar extends Vue {
   private expanded: boolean = false;
-  private links: HTMLElement | null = null;
-
-  public mounted(): void {
-    this.links = document.getElementById("nav-links");
-  }
+  private links: HTMLDivElement = this.$refs.navLinks as HTMLDivElement;
 
   private menuOnClick(): void {
     if (this.expanded) this.collapse();

@@ -1,8 +1,8 @@
 <template>
   <div id="desktop">
-    <MenuBar/>
-    <WindowContainer></WindowContainer>
-    <Dock/>
+    <MenuBar ref="menuBar"/>
+    <WindowContainer ref="windowContainer"></WindowContainer>
+    <Dock ref="dock"/>
   </div>
 </template>
 
@@ -25,19 +25,6 @@ export default class Desktop extends Vue {
     this.runApplication("editor");
   }
 
-  /* Getters must be in the same order as displayed in the template */
-  get menuBar(): MenuBar {
-    return this.$children[0] as MenuBar;
-  }
-
-  get windowContainer(): WindowContainer {
-    return this.$children[1] as WindowContainer;
-  }
-
-  get dock(): Dock {
-    return this.$children[2] as Dock;
-  }
-
   public async runApplication(applicationName: string) {
     try {
       // Always make sure the first letter of the app name argument is capitalize for naming convention...
@@ -46,10 +33,10 @@ export default class Desktop extends Vue {
       app = new app({
         /* Must past parent when manually mounting to retrive parent and store
           https://forum.vuejs.org/t/this-store-undefined-in-manually-mounted-vue-component/8756 */
-        parent: this.windowContainer
+        parent: this.$refs.windowContainer
       });
 
-      this.windowContainer.newWindow(app);
+      (this.$refs.windowContainer as WindowContainer).newWindow(app);
     } catch (error) {
       this.throwException(error);
     }

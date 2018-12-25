@@ -1,3 +1,4 @@
-$topbarHeight: 66px;
-$toolbarHeight: 25px;
-$windowExcludedHeight: $topbarHeight - $toolbarHeight;
+$topBarHeight: 66px;
+$toolbarHeight: 20px;
+$statusBarHeight: 30px;
+$windowExcludedHeight: #{$topBarHeight} - #{$toolbarHeight} - #{$statusBarHeight};

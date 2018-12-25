@@ -57,7 +57,6 @@ export default class Toolbar extends Vue {
 .window-toolbar {
   display: flex;
   flex-direction: row;
-  height: $toolbarHeight;
   margin: 0 15px;
 }
 </style>
