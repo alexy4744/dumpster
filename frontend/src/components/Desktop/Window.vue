@@ -72,7 +72,7 @@ export default class Window extends Vue {
   private shrinkWindow(window: HTMLDivElement): void {
     window.style.width = "initial";
     window.style.height = "initial";
-    window.style.maxHeight = "calc(100vh - 10vh)"; // 10vh is dock height
+    window.style.maxHeight = "var(--max-height)"; // 10vh is dock height, 5vh is menubar height
     this.isMaximized = false;
   }
 
@@ -128,16 +128,18 @@ export default class Window extends Vue {
 @import "@/assets/css/window.scss";
 
 .window {
+  --max-height: calc(100% - #{$dockHeight} - #{$menubarHeight});
+
   background: lighten($background, 5%);
   border: 1px solid white;
   border-radius: 10px;
   resize: both;
   overflow: hidden;
   min-height: 200px;
-  max-height: calc(100% - $dockHeight - $menubarHeight); // 10vh is dock height, 5vh is menubar height
+  max-height: var(--max-height);
   min-width: 375px;
-  height: 80%;
-  width: 80%;
+  height: 75%;
+  width: 90%;
   position: absolute;
   top: 50%;
   left: 50%;

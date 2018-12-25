@@ -9,7 +9,6 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 import MenuBar from "./Desktop/MenuBar.vue";
-import Editor from "./Desktop/Applications/Editor.vue";
 import WindowContainer from "./Desktop/WindowContainer.vue";
 import Dock from "./Desktop/Dock.vue";
 import Application from "./Desktop/Application.vue";
