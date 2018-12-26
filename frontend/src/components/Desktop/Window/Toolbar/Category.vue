@@ -46,16 +46,14 @@ export default class Category extends Vue {
     padding: 10px;
     user-select: none;
     color: lighten($background, 35%);
-  }
 
-  > *:hover {
-    background-color: $background;
-  }
-}
+    &:hover {
+      background-color: $background;
 
-.window-toolbar.category-list:hover {
-  .window-toolbar-category-title {
-    background-color: white;
+      .window-toolbar-category-title {
+        background-color: white;
+      }
+    }
   }
 }
 </style>

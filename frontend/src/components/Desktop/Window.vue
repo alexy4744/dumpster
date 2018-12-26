@@ -1,7 +1,7 @@
 <template>
   <div class="window">
     <div class="window-top" @mousemove="mouseDownOnWindow">
-      <div class="window-top-actions flex flex-row">
+      <div class="window-top-actions">
         <div class="window-top-actions-close" @click="close"></div>
         <div class="window-top-actions-minimize"></div>
         <div class="window-top-actions-maximize" @click="changeWindowSize"></div>
@@ -10,6 +10,7 @@
       <span class="window-top-title">{{ title }}</span>
     </div>
 
+    <!-- Window content below as child elements... -->
     <slot></slot>
   </div>
 </template>
@@ -169,7 +170,8 @@ export default class Window extends Vue {
   user-select: none;
 }
 
-.window-top {
+.window-top,
+.window-top-actions {
   display: flex;
   flex-direction: row;
 }
@@ -195,12 +197,27 @@ export default class Window extends Vue {
   transition: background-color 0.3s ease-in-out;
 }
 
-.window-top-actions-close { background-color: #ff525c; }
-.window-top-actions-close:hover { background-color: darken(#ff525c, 5%); }
+.window-top-actions-close {
+  background-color: #ff525c;
 
-.window-top-actions-minimize { background-color: #ffb852; }
-.window-top-actions-minimize:hover { background-color: darken(#ffb852, 15%); }
+  &:hover {
+    background-color: darken(#ff525c, 5%);
+  }
+}
 
-.window-top-actions-maximize { background-color: #00ca61; }
-.window-top-actions-maximize:hover { background-color: darken(#00ca61, 7%); }
+.window-top-actions-minimize {
+  background-color: #ffb852;
+
+  &:hover {
+    background-color: darken(#ffb852, 15%);
+  }
+}
+
+.window-top-actions-maximize {
+  background-color: #00ca61;
+
+  &:hover {
+    background-color: darken(#00ca61, 7%);
+  }
+}
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-row items-center justify-center" id="uploader">
+  <div id="uploader">
     <DragDrop class/>
     <h1 class="or">OR</h1>
     <Paste class/>
@@ -24,6 +24,10 @@ export default class Uploader extends Vue {}
 @import "@/assets/css/colors.scss";
 
 #uploader {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
   position: absolute;
   top: 50%;
   left: 50%;

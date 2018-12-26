@@ -19,10 +19,10 @@ export default class Action extends Vue {
 .window-toolbar-category-list-action {
   background-color: $background;
   cursor: pointer;
-}
 
-.window-toolbar-category-list-action:hover {
-  background-color: darken($background, 2%);
+  &:hover {
+    background-color: darken($background, 2%);
+  }
 }
 </style>
 

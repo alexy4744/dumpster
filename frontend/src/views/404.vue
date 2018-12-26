@@ -1,14 +1,14 @@
 <template>
-  <div class="bonk flex flex-row justify-center items-center">
-    <div class="bonk-wrapper flex-col">
-      <div class="bonk-wrapper-headers flex flex-row">
+  <div class="bonk">
+    <div class="bonk-wrapper">
+      <div class="bonk-wrapper-headers">
         <h1 class="bonk-wrapper-headers-lenny">( ͡◉ ͜ʖ ͡◉)</h1>
         <h1 class="bonk-wrapper-headers-oops">OOPS!</h1>
       </div>
 
       <h1 class="bonk-wrapper-headers-deadend">You have hit a dead end!</h1>
 
-      <div class="bonk-wrapper-buttons flex flex-row justify-center">
+      <div class="bonk-wrapper-buttons">
         <router-link to="/">
           <button>Go Back</button>
         </router-link>
@@ -108,6 +108,10 @@ export default class Home extends Vue {
 @import "@/assets/css/colors.scss";
 
 .bonk {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
   position: absolute;
   width: 100%;
   top: 50%;
@@ -124,10 +128,13 @@ export default class Home extends Vue {
 }
 
 .bonk-wrapper {
+  flex-direction: column;
   margin-right: 50px;
 }
 
 .bonk-wrapper-headers {
+  display: flex;
+  flex-direction: row;
   min-width: 200px;
 
   @media screen and (max-width: 400px) {
@@ -160,6 +167,9 @@ h1 {
 }
 
 .bonk-wrapper-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
   margin: 35px 0;
 }
 
@@ -172,19 +182,20 @@ button {
   background-color: $primary;
   color: darken($background, 1%);
   transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-}
 
-button:disabled {
-  $disabledColor: darken($primary, 10%);
-  
-  background-color: $disabledColor;
-  border-color: $disabledColor;
-  cursor: default;
-}
+  &:disabled {
+    $disabledColor: darken($primary, 10%);
 
-button:hover:not(:disabled) {
-  background-color: transparent;
+    background-color: $disabledColor;
+    border-color: $disabledColor;
+    cursor: default;
+  }
+
+  &:hover:not(:disabled) {
+    background-color: transparent;
     color: $primary;
+    cursor: pointer;
+  }
 }
 
 video {
@@ -194,10 +205,7 @@ video {
 }
 
 @media screen and (max-width: 538px) {
-  #play-video {
-    display: none;
-  }
-
+  #play-video,
   video {
     display: none;
   }
@@ -232,17 +240,26 @@ video {
 }
 
 @-webkit-keyframes sk-bouncedelay {
-  0%, 80%, 100% { -webkit-transform: scale(0) }
-  40% { -webkit-transform: scale(1.0) }
+  0%,
+  80%,
+  100% {
+    -webkit-transform: scale(0);
+  }
+  40% {
+    -webkit-transform: scale(1);
+  }
 }
 
 @keyframes sk-bouncedelay {
-  0%, 80%, 100% { 
+  0%,
+  80%,
+  100% {
     -webkit-transform: scale(0);
     transform: scale(0);
-  } 40% { 
-    -webkit-transform: scale(1.0);
-    transform: scale(1.0);
+  }
+  40% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
   }
 }
 </style>

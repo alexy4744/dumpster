@@ -1,5 +1,5 @@
 <template>
-  <div class="home flex flex-col justify-center items-center">
+  <div class="home">
     <Uploader/>
   </div>
 </template>
@@ -17,5 +17,11 @@ export default class Home extends Vue {}
 </script>
 
 <style lang="scss" scoped>
+.home {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 </style>
 

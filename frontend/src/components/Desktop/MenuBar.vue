@@ -31,7 +31,6 @@ export default class MenuBar extends Vue {
   height: $menubarHeight;
   position: fixed;
   background-color: lighten($background, 25%);
-  // opacity: 0.5;
   bottom: 100%;
   left: 50%;
   transform: translate(-50%, 100%);
