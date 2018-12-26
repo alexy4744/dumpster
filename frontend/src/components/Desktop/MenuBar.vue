@@ -3,7 +3,7 @@
     <div class="desktop-menu-bar-left"></div>
 
     <div class="desktop-menu-bar-right">
-      <Clock class="mr-5"/>
+      <Clock/>
     </div>
   </div>
 </template>
@@ -17,9 +17,7 @@ import Clock from "./MenuBar/Clock.vue";
     Clock
   }
 })
-export default class MenuBar extends Vue {
-
-}
+export default class MenuBar extends Vue {}
 </script>
 
 <style lang="scss" scoped>
@@ -49,14 +47,22 @@ export default class MenuBar extends Vue {
   height: 100%;
 }
 
-.desktop-menu-bar-left { 
+.desktop-menu-bar-left {
   right: 100%;
   transform: translateX(100%);
+
+  > *:first-child {
+    margin-left: 25px;
+  }
 }
 
-.desktop-menu-bar-right { 
-  left: 100%; 
-  transform: translateX(-100%);  
+.desktop-menu-bar-right {
+  left: 100%;
+  transform: translateX(-100%);
+
+  > *:last-child {
+    margin-right: 25px;
+  }
 }
 </style>
 

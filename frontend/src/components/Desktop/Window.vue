@@ -31,6 +31,7 @@ import Dock from "./Dock.vue";
 })
 export default class Window extends Vue {
   @Prop({ default: "Blank Window" }) public title?: string;
+
   private id: number = this.$store.state.windows.totalWindows;
 
   /* The parent of the parent is the desktop, since window is a container, and the container is a children of desktop */

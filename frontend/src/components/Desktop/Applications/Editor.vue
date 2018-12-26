@@ -19,7 +19,7 @@
       </Category>
     </Toolbar>
 
-    <pre contenteditable="true" @keyup="save" @keydown="changeSaveStatus(0)"></pre>
+    <CodeEditor/>
 
     <StatusBar>
       <Item>
@@ -40,6 +40,9 @@ import WindowContainer from "../WindowContainer.vue";
 /* Base window component */
 import Window from "@/components/Desktop/Window.vue";
 
+/* Editor features */
+import CodeEditor from "./Editor/CodeEditor.vue";
+
 /* Toolbar components */
 import Toolbar from "@/components/Desktop/Window/Toolbar.vue";
 import Category from "@/components/Desktop/Window/Toolbar/Category.vue";
@@ -58,16 +61,15 @@ import SaveStatus from "./Editor/StatusBar/SaveStatus.vue";
     Action,
     StatusBar,
     Item,
-    SaveStatus
+    SaveStatus,
+    CodeEditor
   }
 })
 export default class Editor extends Application {
-  private readonly AUTOSAVE_INTERVAL = 1; // Auto save every second
+  private readonly AUTOSAVE_INTERVAL = 1; // Auto save every second once stopped typing
 
   private readonly parentDesktop: Desktop = (this.$parent as WindowContainer).desktop as Desktop;
   private lastTyped: number | null = null;
-
-  public mounted() {}
 
   private autosave(): void {
     this.changeSaveStatus(1);
@@ -76,7 +78,7 @@ export default class Editor extends Application {
   }
 
   private async save() {
-    const code = this.$refs.code ? (this.$refs.code as HTMLTextAreaElement).value : null;
+    const code = this.$refs.code ? (this.$refs.code as HTMLPreElement) : null;
     if (!code) return;
 
     try {
@@ -98,18 +100,5 @@ export default class Editor extends Application {
 <style lang="scss" scoped>
 @import "@/assets/css/colors.scss";
 @import "@/assets/css/window.scss";
-
-pre {
-  width: 100%;
-  height: calc(100% - #{$windowExcludedHeight});
-  background: inherit;
-  color: white;
-  padding-top: 10px;
-  padding-bottom: 25px;
-  padding-left: 25px;
-  padding-right: 25px;
-  outline: none !important;
-  resize: none;
-}
 </style>
 
