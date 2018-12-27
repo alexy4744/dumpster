@@ -14,7 +14,9 @@ dotenv.config({ path: path.join(__dirname, "../process.env") });
 const app = express();
 const MongoStore = require("connect-mongo")(session);
 
-app.use(async () => {
+app.use(express.static(path.join(__dirname, "../../frontend/dist/")));
+
+(async () => {
   try {
     const url: string = process.env.MONGODB || "mongodb://localhost:27017";
     const database: MongoDB = await MongoDB.initialize({
@@ -22,7 +24,9 @@ app.use(async () => {
       dbName: "dumpster"
     })
 
-    return session({
+    process.stdout.write(`Connected to MongoDB (${url})\n`)
+
+    app.use(session({
       secret: "123456",
       saveUninitialized: false, // don't create session until something stored
       resave: false, // don't save session if unmodified
@@ -30,23 +34,23 @@ app.use(async () => {
         db: database.connection,
         ttl: 604800 // 7 days
       })
-    })
+    }))
   } catch (error) {
     throw error;
   }
-})
 
-app.get("*", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  const file = path.join(__dirname, "../../frontend/dist/index.html");
+  app.get("*", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    const file = path.join(__dirname, "../../frontend/dist/index.html");
 
-  try {
-    await promises.stat(file); // If this doesn't throw an error, then the file exists.
-    res.sendFile(file)
-  } catch (error) { // Else toss the error to the error handler
-    next();
-  }
-});
+    try {
+      await promises.stat(file); // If this doesn't throw an error, then the file exists.
+      res.sendFile(file)
+    } catch (error) { // Else toss the error to the error handler
+      next();
+    }
+  });
 
-// Error handler here...
+  // Error handler here...
+})()
 
 export default app;
