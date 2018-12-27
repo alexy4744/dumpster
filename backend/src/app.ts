@@ -1,61 +1,52 @@
-import fs from "fs";
+import { promises } from "fs";
 import path from "path";
+import dotenv from "dotenv";
 
-import koaBody from "koa-body";
-import koaSend from "koa-send";
-import koaSession from "koa-session";
+import express from "express";
+import session from "express-session";
+import bodyParser from "body-parser";
+import busboy from "busboy";
 
-import Koa from "koa";
-import Router from "koa-router";
+import MongoDB from "./database/MongoDB";
 
-import MongoDB from "./store/MongoDB";
-import MongoStore from "./store/MongoStore";
+dotenv.config({ path: path.join(__dirname, "../process.env") });
 
-import upload from "./api/upload";
-import paste from "./api/paste";
-
-const app = new Koa();
-const router = new Router();
-
-
-// First check if its an API request
-router.post("/api/upload", koaBody({
-  multipart: true,
-  formidable: {
-    hash: "sha1",
-    keepExtensions: true
-  }
-}), (ctx) => upload(ctx));
-
-router.post("/api/paste", koaBody(), (ctx) => paste(ctx));
-
-// If its not, then just load the web app
-router.get("*", async (ctx) => {
-  const file = path.join(__dirname, "../../frontend/dist/index.html");
-
-  try {
-    await fs.promises.stat(file);
-    await koaSend(ctx, file);
-  } catch (error) {
-    ctx.body = error;
-  }
-});
+const app = express();
+const MongoStore = require("connect-mongo")(session);
 
 app.use(async () => {
   try {
-    const database = await MongoDB.initialize({
-      url: "mongodb://localhost:27017",
+    const url: string = process.env.MONGODB || "mongodb://localhost:27017";
+    const database: MongoDB = await MongoDB.initialize({
+      url,
       dbName: "dumpster"
-    });
+    })
 
-    const store = new MongoStore(database);
-
-    return koaSession({ store }, app);
+    return session({
+      secret: "123456",
+      saveUninitialized: false, // don't create session until something stored
+      resave: false, // don't save session if unmodified
+      store: new MongoStore({
+        db: database.connection,
+        ttl: 604800 // 7 days
+      })
+    })
   } catch (error) {
     throw error;
   }
+})
+
+app.get("*", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  const file = path.join(__dirname, "../../frontend/dist/index.html");
+
+  try {
+    await promises.stat(file); // If this doesn't throw an error, then the file exists.
+    res.sendFile(file)
+  } catch (error) { // Else toss the error to the error handler
+    next();
+  }
 });
 
-app.use(router.routes());
+// Error handler here...
 
 export default app;

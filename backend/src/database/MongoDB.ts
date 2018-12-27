@@ -32,8 +32,6 @@ class MongoDB {
     try {
       const connection: MongoClient = await MongoClient.connect(options.url, { useNewUrlParser: true });
 
-      process.stdout.write(`Connected to MongoDB on ${options.url}!`);
-
       this.dbName = options.dbName;
       this.connection = connection.db(this.dbName);
 

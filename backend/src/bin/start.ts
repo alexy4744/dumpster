@@ -23,12 +23,12 @@ async function createServer() {
   };
 
   http
-    .createServer(app.callback())
-    .listen(ports.http, () => process.stdout.write(`Server started on port ${ports.http} (HTTP)`));
+    .createServer(app)
+    .listen(ports.http, () => process.stdout.write(`Server started on port ${ports.http} (HTTP)\n`));
 
   if (certificates.key && certificates.cert) {
     https
-      .createServer(certificates, app.callback())
-      .listen(ports.https, () => process.stdout.write(`Server started on port ${ports.https} (HTTPS)`));
+      .createServer(certificates, app)
+      .listen(ports.https, () => process.stdout.write(`Server started on port ${ports.https} (HTTPS)\n`));
   }
 }
