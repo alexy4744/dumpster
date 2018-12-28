@@ -1,17 +1,34 @@
 import Actions from "../../interfaces/Actions";
-import Window from "@/components/Desktop/Window.vue";
+import hljs from "highlight.js";
+
+const themes: string[] = [
+  "default",
+  "atom-one-dark",
+  "atom-one-light"
+];
 
 /* First param is "context", but destructued, so context.commit, context.state => commit, state */
 export default {
-  newWindow({ commit }: Actions, window: Window) {
-    commit("createNewWindow", window);
+  changeTheme({ commit }: Actions, theme: string): void {
+    if (!themes.includes(theme)) {
+      console.error(`Unknown theme provided (${theme}). Must be one of ${themes.join(", ")}`);
+      return;
+    }
+
+    commit("setTheme", theme);
   },
 
-  close({ commit }: Actions, windowId: string) {
-    commit("removeWindow", windowId);
+  changeLanguage({ commit }: Actions, language: string): void {
+    if (!hljs.listLanguages().includes(language)) {
+      console.error(`Unknown langauge provided (${language}). Must be one of ${hljs.listLanguages().join(", ")}`);
+      return;
+    }
+
+    commit("setLanguage", language);
   },
 
-  closeAll({ commit }: Actions) {
-    commit("removeAllWindows");
+  toggleLineNumbers({ commit }: Actions, shouldEnable: boolean): void {
+    if (shouldEnable) commit("enableLineNumbers");
+    else commit("disableLineNumbers");
   }
 };

@@ -31,6 +31,22 @@ interface HTMLScrollEvent {
 
 @Component
 export default class CodeFlask extends Vue {
+  public beforeCreate() {
+    const theme = localStorage.getItem("editor-theme");
+    const language = localStorage.getItem("editor-language");
+    const lineNumbers = localStorage.getItem("editor-lineNumbers") === "true" ? true : false;
+
+    if (theme) this.$store.dispatch("editor/changeTheme", theme);
+    if (language) this.$store.dispatch("editor/changeLanguage", language);
+
+    // By default, the state of line numbers is already true, so only reassign if it is false in local storage
+    if (!lineNumbers) this.$store.dispatch("editor/toggleLineNumbers", lineNumbers);
+  }
+
+  public mounted() {
+    console.log(this.$store.state.editor)
+  }
+
   private highlight(): void {
     const code: HTMLTextAreaElement = this.$refs.input as HTMLTextAreaElement;
     const syntaxHighlighter: HTMLPreElement = this.$refs.syntaxHighlighter as HTMLPreElement;

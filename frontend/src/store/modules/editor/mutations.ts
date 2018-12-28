@@ -1,22 +1,19 @@
-import State from "../../interfaces/WindowsState";
-import Window from "@/components/Desktop/Window.vue";
+import EditorState from "../../interfaces/EditorState";
 
 export default {
-  createNewWindow(state: State, window: Window): void {
-    state.windows.set(String(state.totalWindows), window);
-    state.totalWindows++;
+  setTheme(state: EditorState, theme: string): void {
+    state.theme = theme;
   },
 
-  removeWindow(state: State, windowId: string): void {
-    state.windows.delete(windowId);
-    state.totalWindows--;
+  setLanguage(state: EditorState, language: string): void {
+    state.language = language;
   },
 
-  removeAllWindows(state: State): void {
-    for (const window of state.windows) {
-      state.windows.delete(window[0]);
-    }
+  enableLineNumbers(state: EditorState): void {
+    state.lineNumbers = true;
+  },
 
-    state.totalWindows = 0;
+  disableLineNumbers(state: EditorState): void {
+    state.lineNumbers = false;
   }
 };
