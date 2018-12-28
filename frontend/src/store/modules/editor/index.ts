@@ -2,11 +2,12 @@ import actions from "./actions"; // Commits changes, which then runs mutations o
 import mutations from "./mutations"; // Actually changes the value within the state.
 
 /* Interfaces */
-import WindowsState from "../../interfaces/WindowsState";
+import EditorState from "../../interfaces/EditorState";
 
-const state: WindowsState = {
-  windows: new Map(),
-  totalWindows: 0
+const state: EditorState = {
+  theme: "default",
+  language: "auto",
+  lineNumbers: true
 };
 
 export default {

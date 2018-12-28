@@ -1,6 +1,20 @@
+<!-- CodeFlask but ported into a component with extra stuff -->
+<!-- https://kazzkiq.github.io/CodeFlask/ -->
+
 <template>
   <div class="code-editor-container" ref="codeEditor">
-    <textarea autofocus spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" ref="codeInput" @scroll="scroll" @input="highlight"></textarea>
+    <!-- When the user stops typing, emit an autosave event with the current input -->
+    <textarea autofocus 
+      spellcheck="false"
+      autocapitalize="off"
+      autocomplete="off"
+      autocorrect="off"
+      ref="input"
+      @scroll="scroll"
+      @input="highlight"
+      @keyup="$emit('autosave', $event.target.value)">
+    </textarea>
+
     <pre ref="syntaxHighlighter"></pre>
   </div>
 </template>
@@ -16,16 +30,16 @@ interface HTMLScrollEvent {
 }
 
 @Component
-export default class CodeEditor extends Vue {
+export default class CodeFlask extends Vue {
   private highlight(): void {
-    const code: HTMLTextAreaElement = this.$refs.codeInput as HTMLTextAreaElement;
+    const code: HTMLTextAreaElement = this.$refs.input as HTMLTextAreaElement;
     const syntaxHighlighter: HTMLPreElement = this.$refs.syntaxHighlighter as HTMLPreElement;
     if (!code || !syntaxHighlighter) throw new Error("Code or syntax highlighter element not found!");
 
     syntaxHighlighter.innerHTML = hljs.highlightAuto(code.value).value;
   }
 
-  private scroll(event: HTMLScrollEvent) {
+  private scroll(event: HTMLScrollEvent): void {
     (this.$refs.syntaxHighlighter as HTMLPreElement).style.transform = `translate(-${event.target.scrollLeft}px, -${event.target.scrollTop}px)`;
   }
 }
@@ -56,18 +70,19 @@ textarea,
 pre {
   --font-size: 16px;
 
-  display: block;
-  resize: none;
-  background: none;
-  border: none;
-  padding: 0;
-  outline: none;
-  position: absolute;
-  white-space: pre; // Preserve whitespace
-  font-size: var(--font-size);
-  font-family: "Fira Code", monospace;
   width: 100%;
   height: 100%;
+  background: none;
+  display: block;
+  position: absolute;
+  font-size: var(--font-size);
+  font-family: "Fira Code", monospace;
+  white-space: pre; // Preserve whitespace
+  margin: 0;
+  padding: 0;
+  resize: none;
+  border: none;
+  outline: none;
 }
 
 // Text area just serves a purpose to allow the user to type
@@ -76,10 +91,5 @@ textarea {
   caret-color: white;
   z-index: 1;
   overflow: auto;
-}
-
-pre {
-  margin: 0;
-  margin-bottom: 15px;
 }
 </style>

@@ -19,7 +19,7 @@
       </Category>
     </Toolbar>
 
-    <CodeEditor/>
+    <CodeFlask @autosave="autosave"/>
 
     <StatusBar>
       <Item>
@@ -41,7 +41,7 @@ import WindowContainer from "../WindowContainer.vue";
 import Window from "@/components/Desktop/Window.vue";
 
 /* Editor features */
-import CodeEditor from "./Editor/CodeEditor.vue";
+import CodeFlask from "./Editor/CodeFlask.vue";
 
 /* Toolbar components */
 import Toolbar from "@/components/Desktop/Window/Toolbar.vue";
@@ -62,7 +62,7 @@ import SaveStatus from "./Editor/StatusBar/SaveStatus.vue";
     StatusBar,
     Item,
     SaveStatus,
-    CodeEditor
+    CodeFlask
   }
 })
 export default class Editor extends Application {
@@ -71,23 +71,20 @@ export default class Editor extends Application {
   private readonly parentDesktop: Desktop = (this.$parent as WindowContainer).desktop as Desktop;
   private lastTyped: number | null = null;
 
-  private autosave(): void {
-    this.changeSaveStatus(1);
-    if (this.lastTyped) clearTimeout(this.lastTyped);
-    this.lastTyped = setTimeout(() => this.save(), this.AUTOSAVE_INTERVAL * 1000) as any;
-  }
-
-  private async save() {
-    const code = this.$refs.code ? (this.$refs.code as HTMLPreElement) : null;
-    if (!code) return;
-
+  private async save(input: string) {
     try {
-      /* API post request here */
+      /* API post request or websocket here */
     } catch (error) {
       return this.parentDesktop.throwException(error);
     }
 
     this.changeSaveStatus(2);
+  }
+
+  private autosave(input: string): void {
+    this.changeSaveStatus(1);
+    if (this.lastTyped) clearTimeout(this.lastTyped);
+    this.lastTyped = setTimeout(() => this.save(input), this.AUTOSAVE_INTERVAL * 1000) as any;
   }
 
   private changeSaveStatus(status: number): void {
