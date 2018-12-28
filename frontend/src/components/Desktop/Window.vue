@@ -131,18 +131,18 @@ export default class Window extends Vue {
 @import "@/assets/css/window.scss";
 
 .window {
-  --min-height: 200px;
-  --min-width: 375px;
-  --max-height: calc(100% - #{$dockHeight} - #{$menubarHeight});
+  --min-height: 300px;
+  --min-width: 500px;
+  --max-height: calc(100% - #{$dockHeight} - #{$menubarHeight} - #{$statusBarHeight});
 
   background: lighten($background, 5%);
   border: 1px solid white;
   border-radius: 10px;
   resize: both;
   overflow: hidden;
-  min-height: 200px;
+  min-height: var(--min-height);
   max-height: var(--max-height);
-  min-width: 375px;
+  min-width: var(--min-width);
   height: 50%; // Initial height
   width: 50%; // Initial width
   position: absolute;
