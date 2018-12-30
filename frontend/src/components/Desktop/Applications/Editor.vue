@@ -68,14 +68,13 @@ import SaveStatus from "./Editor/StatusBar/SaveStatus.vue";
 export default class Editor extends Application {
   private readonly AUTOSAVE_INTERVAL = 1; // Auto save every second once stopped typing
 
-  private readonly parentDesktop: Desktop = (this.$parent as WindowContainer).desktop as Desktop;
   private lastTyped: number | null = null;
 
   private async save(input: string) {
     try {
       /* API post request or websocket here */
     } catch (error) {
-      return this.parentDesktop.throwException(error);
+      return this.desktop.throwException(error);
     }
 
     this.changeSaveStatus(2);
