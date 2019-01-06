@@ -1,15 +1,17 @@
 import Vue from "vue";
 import Vuex from "vuex";
 
-import windows from "./modules/windows";
+import desktop from "./modules/desktop";
 import editor from "./modules/editor";
+import windows from "./modules/windows";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules: {
-    windows,
-    editor
+    desktop,
+    editor,
+    windows
   },
   strict: process.env.NODE_ENV !== "production"
 });

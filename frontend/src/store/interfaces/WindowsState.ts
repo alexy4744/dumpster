@@ -1,6 +1,6 @@
-import Window from "@/components/Desktop/Window.vue";
+import Application from "@/components/Desktop/Application.vue";
 
 export default interface WindowsState {
-  windows: Map<string, Window>;
+  windows: Map<string, Application>;
   totalWindows: number;
 }

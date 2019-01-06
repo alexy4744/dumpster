@@ -1,9 +1,9 @@
 import Actions from "../../interfaces/Actions";
-import Window from "@/components/Desktop/Window.vue";
+import Application from "@/components/Desktop/Application.vue";
 
 /* First param is "context", but destructued, so context.commit, context.state => commit, state */
 export default {
-  newWindow({ commit }: Actions, window: Window) {
+  addWindow({ commit, state }: Actions, window: Application) {
     commit("createNewWindow", window);
   },
 

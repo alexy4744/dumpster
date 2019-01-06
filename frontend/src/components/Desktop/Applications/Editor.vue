@@ -70,11 +70,15 @@ export default class Editor extends Application {
 
   private lastTyped: number | null = null;
 
+  public mounted() {
+    
+  }
+
   private async save(input: string) {
     try {
       /* API post request or websocket here */
     } catch (error) {
-      return this.desktop.throwException(error);
+      return this.$store.dispatch("desktop/throwException", error);
     }
 
     this.changeSaveStatus(2);

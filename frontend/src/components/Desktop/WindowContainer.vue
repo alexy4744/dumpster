@@ -6,31 +6,28 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
+import Bus from "@/bus";
+
 import Window from "./Window.vue";
 
 @Component
 export default class WindowContainer extends Vue {
-  public desktop = this.$parent;
+  public mounted() {
+    Bus.$on("newWindow", (app: any, appName: string) => {
+      try {
+        app = new app({
+          /* Must past parent when manually mounting to retrive parent and store
+            https://forum.vuejs.org/t/this-store-undefined-in-manually-mounted-vue-component/8756 */
+          parent: this
+        }).$mount();
 
-  get totalWindows(): number {
-    return this.$store.state.windows.totalWindows;
-  }
+        (this.$refs.windows as HTMLDivElement).appendChild(app.$el);
 
-  public newWindow(window: Window): void {
-    window.$mount();
-
-    this.$store.dispatch("windows/newWindow", window);
-    (this.$refs.windows as HTMLDivElement).appendChild(window.$el);
-  }
-
-  public closeAll(): void {
-    const { windows } = this.$store.state.windows;
-
-    for (const window of windows) {
-      window[1].close();
-    }
-
-    this.$store.dispatch("windows/closeAll");
+        this.$store.dispatch("windows/addWindow", app);
+      } catch (error) {
+        this.$store.dispatch("desktop/throwException", error);
+      }
+    });
   }
 }
 </script>

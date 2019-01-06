@@ -24,7 +24,7 @@ export default class Dock extends Vue {
   width: 80vw;
   height: $dockHeight;
   position: fixed;
-  background-color: lighten($background, 25%);
+  background-color: lighten($background, 10%);
   padding: 15px;
   opacity: 0.25;
   top: 100%;

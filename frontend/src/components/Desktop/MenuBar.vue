@@ -28,7 +28,7 @@ export default class MenuBar extends Vue {}
   width: 100vw;
   height: $menubarHeight;
   position: fixed;
-  background-color: lighten($background, 25%);
+  background-color: lighten($background, 10%);
   bottom: 100%;
   left: 50%;
   transform: translate(-50%, 100%);
