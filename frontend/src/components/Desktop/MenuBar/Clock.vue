@@ -14,7 +14,7 @@ export default class Clock extends Vue {
 
   public prettyTime(date?: number): string {
     return new Date(date || Date.now()).toLocaleTimeString([], {
-      hour12: true,
+      hour12: this.$store.state.desktop.timeFormat,
       weekday: "short"
     });
   }

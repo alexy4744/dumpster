@@ -5,8 +5,8 @@ import mutations from "./mutations"; // Actually changes the value within the st
 import EditorState from "../../interfaces/EditorState";
 
 const state: EditorState = {
-  theme: "default",
-  language: "auto",
+  theme: null,
+  language: null,
   lineNumbers: true
 };
 

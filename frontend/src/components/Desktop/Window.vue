@@ -34,9 +34,6 @@ export default class Window extends Vue {
 
   private id: number = this.$store.state.windows.totalWindows;
 
-  /* The parent of the parent is the desktop, since window is a container, and the container is a children of desktop */
-  private desktop: Desktop = this.$parent.$parent.$parent as Desktop;
-
   private x: number = 0;
   private y: number = 0;
   private finalX: number = 0;
@@ -52,17 +49,12 @@ export default class Window extends Vue {
   }
 
   private changeWindowSize(event: MouseEvent): void {
-    const window = Polyfills.composedPath(event)[3]; // Get the WHOLE window, not just the element that was targetted
+    const window: HTMLDivElement = Polyfills.composedPath(event)[3]; // Get the WHOLE window, not just the element that was targetted
 
     this.centerWindow(window);
 
-    if (!this.isMaximized) {
-      this.expandWindow(window);
-      (this.desktop.$refs.dock as Dock).dockZIndex(-9999);
-    } else {
-      this.shrinkWindow(window);
-      (this.desktop.$refs.dock as Dock).dockZIndex(9999);
-    }
+    if (!this.isMaximized) this.expandWindow(window);
+    else this.shrinkWindow(window);
   }
 
   private expandWindow(window: HTMLDivElement): void {
@@ -75,7 +67,7 @@ export default class Window extends Vue {
   private shrinkWindow(window: HTMLDivElement): void {
     window.style.width = "var(--min-width)";
     window.style.height = "var(--min-height)";
-    window.style.maxHeight = "var(--max-height)"; // 10vh is dock height, 5vh is menubar height
+    window.style.maxHeight = "var(--max-height)";
     this.isMaximized = false;
   }
 
@@ -131,18 +123,22 @@ export default class Window extends Vue {
 @import "@/assets/css/window.scss";
 
 .window {
+  $border-width: 1px;
+
   --min-height: 300px;
-  --min-width: 500px;
-  --max-height: calc(100% - #{$dockHeight} - #{$menubarHeight} - #{$statusBarHeight});
+  --max-height: calc(100% - #{$menubarHeight});
+  --min-width: calc(500px - calc(#{$border-width} * 2));
+  --max-width: calc(100% - calc(#{$border-width} * 2));
 
   background: lighten($background, 5%);
-  border: 1px solid white;
+  border: $border-width solid lighten($background, 25%);
   border-radius: 10px;
   resize: both;
   overflow: hidden;
   min-height: var(--min-height);
   max-height: var(--max-height);
   min-width: var(--min-width);
+  max-width: var(--max-width);
   height: 50%; // Initial height
   width: 50%; // Initial width
   position: absolute;

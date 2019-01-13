@@ -1,8 +1,8 @@
 <template>
   <div id="desktop-menu-bar">
-    <div class="desktop-menu-bar-left"></div>
+    <div class="desktop-menu-bar-left" ref="left"></div>
 
-    <div class="desktop-menu-bar-right">
+    <div class="desktop-menu-bar-right" ref="right">
       <Clock/>
     </div>
   </div>
@@ -28,11 +28,10 @@ export default class MenuBar extends Vue {}
   width: 100vw;
   height: $menubarHeight;
   position: fixed;
-  background-color: lighten($background, 10%);
+  background-color: rgba($background, 0.75);
   bottom: 100%;
   left: 50%;
   transform: translate(-50%, 100%);
-  overflow-x: auto;
   overflow-y: hidden;
 }
 

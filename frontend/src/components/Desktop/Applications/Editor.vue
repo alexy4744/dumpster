@@ -22,9 +22,7 @@
     <CodeFlask @autosave="autosave"/>
 
     <StatusBar>
-      <Item>
-        <SaveStatus ref="saveStatus"/>
-      </Item>
+      <SaveStatus ref="saveStatus"/>
     </StatusBar>
   </Window>
 </template>
@@ -50,7 +48,6 @@ import Action from "@/components/Desktop/Window/Toolbar/Action.vue";
 
 /* Status bar components */
 import StatusBar from "@/components/Desktop/Window/StatusBar.vue";
-import Item from "@/components/Desktop/Window/StatusBar/Item.vue";
 import SaveStatus from "./Editor/StatusBar/SaveStatus.vue";
 
 @Component({
@@ -60,28 +57,23 @@ import SaveStatus from "./Editor/StatusBar/SaveStatus.vue";
     Category,
     Action,
     StatusBar,
-    Item,
     SaveStatus,
     CodeFlask
   }
 })
 export default class Editor extends Application {
-  private readonly AUTOSAVE_INTERVAL = 1; // Auto save every second once stopped typing
+  private readonly AUTOSAVE_INTERVAL: number = 1; // Auto save every second once stopped typing
 
   private lastTyped: number | null = null;
-
-  public mounted() {
-    
-  }
 
   private async save(input: string) {
     try {
       /* API post request or websocket here */
+      this.changeSaveStatus(2);
     } catch (error) {
-      return this.$store.dispatch("desktop/throwException", error);
+      this.$store.dispatch("desktop/throwException", error);
+      this.changeSaveStatus(0);
     }
-
-    this.changeSaveStatus(2);
   }
 
   private autosave(input: string): void {

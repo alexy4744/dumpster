@@ -6,19 +6,21 @@
     <div class="codeflask-line-numbers" ref="lineNumbers"></div>
 
     <!-- When the user stops typing, emit an autosave event with the current input -->
-    <textarea autofocus 
+    <textarea
+      autofocus
       spellcheck="false"
       autocapitalize="off"
       autocomplete="off"
       autocorrect="off"
-      ref="input"
+      ref="textArea"
       @scroll="scroll"
-      @input="highlight"
+      @input="typed"
       @paste="paste"
       @keyup="$emit('autosave', $event.target.value)"
       @keydown.enter="addLineNumber($event.target.value.split('\n').length + 1)"
-      @keydown.delete="deleteLineNumber">
-    </textarea>
+      @keydown.delete="deleteLineNumber"
+      @keydown.tab="insertTab"
+    ></textarea>
 
     <pre ref="syntaxHighlighter"></pre>
   </div>
@@ -30,22 +32,35 @@ import { Component, Vue } from "vue-property-decorator";
 import hljs from "highlight.js";
 import "highlight.js/styles/atom-one-dark.css";
 
-interface HTMLScrollEvent {
-  target: HTMLElement & EventTarget;
-}
+interface HTMLScrollEvent { target: HTMLElement & EventTarget; }
+interface SelfClosingCharacters { [key: string]: string; }
 
 @Component
 export default class CodeFlask extends Vue {
+  private readonly TAB_SIZE: number = 2;
+  private readonly SELF_CLOSING_CHARACTERS: SelfClosingCharacters = {
+    "[": "]",
+    "{": "}",
+    "(": ")",
+    "<": ">",
+    "'": "'",
+    "\"": "\""
+  };
+
   private get syntaxHighlighter(): HTMLPreElement {
     return this.$refs.syntaxHighlighter as HTMLPreElement;
   }
 
-  private get input(): HTMLTextAreaElement {
-    return this.$refs.input as HTMLTextAreaElement;
+  private get textArea(): HTMLTextAreaElement {
+    return this.$refs.textArea as HTMLTextAreaElement;
+  }
+
+  private get lineNumbers(): HTMLDivElement {
+    return this.$refs.lineNumbers as HTMLDivElement;
   }
 
   /* Read the settings from the local storage and assign it to the editor. */
-  public beforeCreate() {
+  public beforeCreate(): void {
     const theme: string | null = localStorage.getItem("editor-theme");
     const language: string | null = localStorage.getItem("editor-language");
     const lineNumbers: boolean = localStorage.getItem("editor-lineNumbers") === "true" ? true : false;
@@ -57,9 +72,9 @@ export default class CodeFlask extends Vue {
     if (!lineNumbers) this.$store.dispatch("editor/toggleLineNumbers", lineNumbers);
   }
 
-  public mounted() {
+  public mounted(): void {
     /* If the language has been change, then re-highlight the code */
-    this.$store.watch((state) => state.editor.language, (): void => this.highlight());
+    this.$store.watch(state => state.editor.language, (): void => this.highlight());
     /* TODO
       this.$store.watch((state) => state.editor.lineNumbers, (newValue, oldValue) => this.toggleLineNumbers(newValue, oldValue));
      */
@@ -67,46 +82,78 @@ export default class CodeFlask extends Vue {
     this.addLineNumber(1);
   }
 
+  private typed(input: any): void {
+    this.addSelfCloseCharacter(input.data);
+    this.highlight();
+  }
+
   private paste(event: ClipboardEvent): void {
     if (!this.$store.state.editor.lineNumbers) return;
 
-    setTimeout((): void => {
-      const currentLine: number = (this.$refs.lineNumbers as HTMLDivElement).children.length; // Get the current number of lines
-      const totalLines: number = this.input.value.split("\n").length;
+    setTimeout(
+      (): void => {
+        const currentLines: number = this.lineNumbers.children.length; // Get the current number of lines
+        const totalLines: number = this.textArea.value.split("\n").length;
 
-      for (let i: number = currentLine + 1; i < totalLines + 1; i++) this.addLineNumber(i);
-    });
+        for (let i: number = currentLines + 1; i < totalLines + 1; i++) this.addLineNumber(i);
+      }
+    );
   }
 
   private highlight(): void {
     const { language } = this.$store.state.editor;
 
-    if (!language) this.syntaxHighlighter.innerHTML = hljs.highlightAuto(this.input.value).value;
-    else this.syntaxHighlighter.innerHTML = hljs.highlight(language, this.input.value).value;
+    if (!language) this.syntaxHighlighter.innerHTML = hljs.highlightAuto(this.textArea.value).value;
+    else this.syntaxHighlighter.innerHTML = hljs.highlight(language, this.textArea.value).value;
+  }
+
+  private insertText(text: string): void {
+    const start = this.textArea.selectionStart;
+    const end = this.textArea.selectionEnd;
+
+    this.textArea.value = this.textArea.value.slice(0, start) + text + this.textArea.value.slice(end);
+    this.textArea.selectionEnd = start + text.length;
+  }
+
+  private insertTab(event: KeyboardEvent): void {
+    event.preventDefault();
+
+    this.insertText(" ".repeat(this.TAB_SIZE));
+    this.highlight();
   }
 
   private scroll(event: HTMLScrollEvent): void {
     this.syntaxHighlighter.style.transform = `translate(-${event.target.scrollLeft}px, -${event.target.scrollTop}px)`;
-    (this.$refs.lineNumbers as HTMLDivElement).style.transform = this.syntaxHighlighter.style.transform;
+    this.lineNumbers.style.transform = this.syntaxHighlighter.style.transform;
+  }
+
+  private addSelfCloseCharacter(character: string): void {
+    if (!this.SELF_CLOSING_CHARACTERS[character]) return;
+
+    this.insertText(this.SELF_CLOSING_CHARACTERS[character]);
+    this.highlight();
   }
 
   private addLineNumber(num: number): void {
     const line: HTMLSpanElement = document.createElement("span");
+
     line.className = "line-number";
     line.innerText = String(num);
-    (this.$refs.lineNumbers as HTMLDivElement).appendChild(line);
+
+    this.lineNumbers.appendChild(line);
   }
 
   private deleteLineNumber(): void {
-    setTimeout((): void => {
-      const lineNumbers: HTMLDivElement = this.$refs.lineNumbers as HTMLDivElement;
-      const linesLeft: number = this.input.value.split("\n").length; // Get the number of lines it should have
+    setTimeout(
+      (): void => {
+        const linesLeft: number = this.textArea.value.split("\n").length; // Get the number of lines it should have by splitting every new line and counting it
 
-      // Keep deleting the last child (the last line number) until it meets the number of lines it should have after deletion
-      while (lineNumbers.children.length > linesLeft) {
-        lineNumbers.removeChild(lineNumbers.lastChild as Node);
+        // Keep deleting the last child (the last line number) until it meets the number of lines it should have after deletion
+        while (this.lineNumbers.children.length > linesLeft) {
+          this.lineNumbers.removeChild(this.lineNumbers.lastChild as Node);
+        }
       }
-    });
+    );
   }
 }
 </script>
@@ -144,11 +191,8 @@ export default class CodeFlask extends Vue {
   height: 100%;
   position: absolute;
   font-size: var(--font-size);
-  text-align: center;
-
-  /deep/ span { // TODO: Don't use /deep/, deprecated
-    background-color: $background;
-  }
+  text-align: left;
+  color: lighten($background, 50%);
 }
 
 .codeflask-line-numbers,

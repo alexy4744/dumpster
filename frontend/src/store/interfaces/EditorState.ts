@@ -1,5 +1,5 @@
 export default interface EditorState {
-  theme: string;
-  language: string;
+  theme: string | null;
+  language: string | null;
   lineNumbers: boolean;
 }

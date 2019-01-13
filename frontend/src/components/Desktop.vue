@@ -2,7 +2,6 @@
   <div id="desktop">
     <MenuBar ref="menuBar"/>
     <WindowContainer ref="windowContainer"></WindowContainer>
-    <Dock ref="dock"/>
   </div>
 </template>
 
@@ -12,14 +11,12 @@ import Bus from "@/bus";
 
 import MenuBar from "./Desktop/MenuBar.vue";
 import WindowContainer from "./Desktop/WindowContainer.vue";
-import Dock from "./Desktop/Dock.vue";
 import Application from "./Desktop/Application.vue";
 
 @Component({
   components: {
     MenuBar,
-    WindowContainer,
-    Dock
+    WindowContainer
   }
 })
 export default class Desktop extends Vue {

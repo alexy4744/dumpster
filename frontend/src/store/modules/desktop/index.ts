@@ -4,11 +4,7 @@ import mutations from "./mutations"; // Actually changes the value within the st
 /* Interfaces */
 import DesktopState from "../../interfaces/DesktopState";
 
-const state: DesktopState = {
-  menuBar: null,
-  windows: null,
-  dock: null
-};
+const state = {};
 
 export default {
   namespaced: true,

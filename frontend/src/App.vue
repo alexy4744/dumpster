@@ -15,12 +15,13 @@ export default class App extends Vue {}
 @import "assets/css/colors";
 
 body {
-  background-color: $background;
+	background: linear-gradient(300deg, #1e272e, #0F1419);
+	background-size: 100vw 100vh;
   overflow: auto;
 }
 
 #app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  color: #2c3e50;
+  font-family: Helvetica, Arial, sans-serif;
+  color: white;
 }
 </style>
