@@ -5,30 +5,58 @@ import https from "https";
 import dotenv from "dotenv";
 import path from "path";
 
-import app from "../app";
+import { Application } from "express";
+
+import Mongoose from "../database/Mongoose";
+import { Connection } from "mongoose";
+
+import App from "../app";
 
 dotenv.config({ path: path.join(__dirname, "../process.env") });
 
-const ports = {
+const MONGODB_ADDRESS: string = process.env.MONGODB || "mongodb://localhost:27017";
+const MONGODB_DB_NAME: string = "dumpster";
+
+const PORTS: { [key: string]: number } = {
   http: parseInt(process.env.HTTPS, null) || 80,
   https: parseInt(process.env.HTTPS, null) || 443
 };
 
-createServer();
+const mongoose: Mongoose = new Mongoose();
 
-async function createServer() {
-  const certificates = {
-    key: await fs.promises.readFile("../certs/cert.key").catch(() => null),
-    cert: await fs.promises.readFile("../certs/cert.pem").catch(() => null)
+start();
+
+async function start(): Promise<void> {
+  const databaseConnection = await connectToDatabase();
+  const app: Application = new App(databaseConnection).initialize();
+  createServer(app);
+}
+
+async function connectToDatabase(): Promise<Connection> {
+  const connection: Connection = await mongoose.connect(MONGODB_ADDRESS, {
+    dbName: MONGODB_DB_NAME
+  });
+
+  return connection;
+}
+
+async function createServer(app: Application): Promise<void> {
+  const CERTIFICATES: { [key: string]: Buffer | null } = {
+    key: await fs.promises
+      .readFile("../certs/cert.key")
+      .catch(() => null),
+    cert: await fs.promises
+      .readFile("../certs/cert.pem")
+      .catch(() => null)
   };
 
   http
     .createServer(app)
-    .listen(ports.http, () => process.stdout.write(`Server started on port ${ports.http} (HTTP)\n`));
+    .listen(PORTS.http, () => process.stdout.write(`Server started on port ${PORTS.http} (HTTP)\n`));
 
-  if (certificates.key && certificates.cert) {
+  if (CERTIFICATES.key && CERTIFICATES.cert) {
     https
-      .createServer(certificates, app)
-      .listen(ports.https, () => process.stdout.write(`Server started on port ${ports.https} (HTTPS)\n`));
+      .createServer(CERTIFICATES, app)
+      .listen(PORTS.https, () => process.stdout.write(`Server started on port ${PORTS.https} (HTTPS)\n`));
   }
 }

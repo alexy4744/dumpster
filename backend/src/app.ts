@@ -1,56 +1,59 @@
-import { promises } from "fs";
 import path from "path";
-import dotenv from "dotenv";
 
-import express from "express";
+import express, { Application } from "express";
 import session from "express-session";
 import bodyParser from "body-parser";
-import busboy from "busboy";
 
-import MongoDB from "./database/MongoDB";
+// @ts-ignore Do not install @types/connect-mongo as it conflicts with mongoose's type defs
+import connectMongo, { MongoStoreFactory } from "connect-mongo";
+import { Connection } from "mongoose";
 
-dotenv.config({ path: path.join(__dirname, "../process.env") });
+/* ROUTES */
+import serveWebApp from "./routes/serverWebApp";
 
-const app = express();
-const MongoStore = require("connect-mongo")(session);
+const MongoStore: MongoStoreFactory = connectMongo(session);
 
-app.use(express.static(path.join(__dirname, "../../frontend/dist/")));
+export default class DumpsterServer {
+  public app: Application = express();
 
-(async () => {
-  try {
-    const url: string = process.env.MONGODB || "mongodb://localhost:27017";
-    const database: MongoDB = await MongoDB.initialize({
-      url,
-      dbName: "dumpster"
-    })
+  private readonly COOKIE_SECRET: string | undefined = process.env.COOKIE_SECRET;
 
-    process.stdout.write(`Connected to MongoDB (${url})\n`)
+  private readonly database: Connection;
 
-    app.use(session({
-      secret: "123456",
-      saveUninitialized: false, // don't create session until something stored
-      resave: false, // don't save session if unmodified
-      store: new MongoStore({
-        db: database.connection,
-        ttl: 604800 // 7 days
-      })
-    }))
-  } catch (error) {
-    throw error;
+  constructor(databaseConnection: Connection) {
+    this.database = databaseConnection;
   }
 
-  app.get("*", async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-    const file = path.join(__dirname, "../../frontend/dist/index.html");
+  public initialize() {
+    this.checkConstants();
+    this.loadMiddleware();
+    this.loadRoutes();
 
-    try {
-      await promises.stat(file); // If this doesn't throw an error, then the file exists.
-      res.sendFile(file)
-    } catch (error) { // Else toss the error to the error handler
-      next();
-    }
-  });
+    return this.app;
+  }
 
-  // Error handler here...
-})()
+  private checkConstants() {
+    if (!this.COOKIE_SECRET) throw new TypeError("Expected a string for cookie secret, received undefined instead.");
+  }
 
-export default app;
+  private loadMiddleware() {
+    this.app
+      .use(express.static(path.join(__dirname, "../../frontend/dist/")))
+      .use(bodyParser.json())
+      .use(bodyParser.urlencoded({ extended: true }))
+      .use(session({
+        secret: this.COOKIE_SECRET,
+        saveUninitialized: false, // don't create session until something stored
+        resave: false, // don't save session if unmodified
+        store: new MongoStore({
+          mongooseConnection: this.database,
+          ttl: 604800 // 7 days
+        })
+      }));
+  }
+
+  private async loadRoutes() {
+    this.app
+      .use("*", serveWebApp); // ALWAYS have to be the last route to prevent it from overriding other routes
+  }
+}
