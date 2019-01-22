@@ -6,11 +6,10 @@ import dotenv from "dotenv";
 import path from "path";
 
 import { Application } from "express";
-
-import Mongoose from "../database/Mongoose";
-import { Connection } from "mongoose";
+import mongoose, { Mongoose } from "mongoose";
 
 import App from "../app";
+import Console from "../structures/Console";
 
 dotenv.config({ path: path.join(__dirname, "../process.env") });
 
@@ -18,45 +17,51 @@ const MONGODB_ADDRESS: string = process.env.MONGODB || "mongodb://localhost:2701
 const MONGODB_DB_NAME: string = "dumpster";
 
 const PORTS: { [key: string]: number } = {
-  http: parseInt(process.env.HTTPS, null) || 80,
+  http: parseInt(process.env.HTTP, null) || 80,
   https: parseInt(process.env.HTTPS, null) || 443
 };
 
-const mongoose: Mongoose = new Mongoose();
+const console: Console = new Console();
 
 start();
 
 async function start(): Promise<void> {
-  const databaseConnection = await connectToDatabase();
-  const app: Application = new App(databaseConnection).initialize();
+  const database: Mongoose = await connectToDatabase();
+  const app: Application = new App(database).initialize();
   createServer(app);
 }
 
-async function connectToDatabase(): Promise<Connection> {
-  const connection: Connection = await mongoose.connect(MONGODB_ADDRESS, {
-    dbName: MONGODB_DB_NAME
-  });
+async function connectToDatabase(): Promise<Mongoose> {
+  return new Promise((resolve, reject): void => {
+    mongoose.connection.on("open", console.log.bind(this, `[MONGOOSE] Connected to ${MONGODB_ADDRESS}!`));
+    mongoose.connection.on("error", console.error.bind(this));
 
-  return connection;
+    mongoose.connect(MONGODB_ADDRESS, {
+      dbName: MONGODB_DB_NAME
+    }, (error: Error): void => {
+      if (error) return reject(error);
+      resolve(mongoose);
+    });
+  });
 }
 
 async function createServer(app: Application): Promise<void> {
   const CERTIFICATES: { [key: string]: Buffer | null } = {
     key: await fs.promises
       .readFile("../certs/cert.key")
-      .catch(() => null),
+      .catch((): null => null),
     cert: await fs.promises
       .readFile("../certs/cert.pem")
-      .catch(() => null)
+      .catch((): null => null)
   };
 
   http
     .createServer(app)
-    .listen(PORTS.http, () => process.stdout.write(`Server started on port ${PORTS.http} (HTTP)\n`));
+    .listen(PORTS.http, console.log.bind(this, `Server started on port ${PORTS.http} (HTTP)\n`));
 
   if (CERTIFICATES.key && CERTIFICATES.cert) {
     https
       .createServer(CERTIFICATES, app)
-      .listen(PORTS.https, () => process.stdout.write(`Server started on port ${PORTS.https} (HTTPS)\n`));
+      .listen(PORTS.https, console.log.bind(this, `Server started on port ${PORTS.https} (HTTPS)\n`));
   }
 }

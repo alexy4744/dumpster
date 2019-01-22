@@ -1,6 +1,10 @@
-import mongoose from "mongoose";
+import { Schema, model } from "mongoose";
 
-const fileSchema = new mongoose.Schema({
+const fileSchema: Schema = new Schema({
   name: String,
-  // data:
+  uid: String,
+  date: Date,
+  chunk: Buffer
 });
+
+export default model("File", fileSchema);
