@@ -1,3 +1,5 @@
+require("module-alias/register"); // tslint:disable-line
+
 import fs from "fs";
 import http from "http";
 import https from "https";
@@ -8,8 +10,8 @@ import path from "path";
 import { Application } from "express";
 import mongoose, { Mongoose } from "mongoose";
 
-import App from "../app";
-import Console from "../structures/Console";
+import App from "@/app";
+import Console from "@structures/Console";
 
 dotenv.config({ path: path.join(__dirname, "../process.env") });
 

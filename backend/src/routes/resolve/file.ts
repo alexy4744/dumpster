@@ -1,8 +1,12 @@
-import Request from "../../interfaces/Request";
-import File from "../../interfaces/File";
+import Console from "@structures/Console";
+
+import Request from "@interfaces/Request";
+import File from "@interfaces/File";
 
 import { Response } from "express";
 import { Cursor } from "mongodb";
+
+const console: Console = new Console();
 
 export default async (req: Request, res: Response): Promise<void> => {
   const file: Cursor = req.fileBucket.find({

@@ -1,8 +1,8 @@
 import { Router } from "express";
 
 /* SUB ROUTES */
-import resolveFile from "./resolve/file";
-import resolvePaste from "./resolve/paste";
+import resolveFile from "@routes/resolve/file";
+import resolvePaste from "@routes/resolve/paste";
 
 const router: Router = Router();
 

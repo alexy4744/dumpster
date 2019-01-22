@@ -10,9 +10,13 @@
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {
-      "*": [
-        "node_modules/*"
-      ]
+      "*": ["node_modules/*"],
+      "@/*": ["src/*"],
+      "@models/*": ["src/models/*"],
+      "@structures/*": ["src/structures/*"],
+      "@routes/*": ["src/routes/*"],
+      "@utils/*": ["src/utils/*"],
+      "@interfaces/*": ["src/interfaces/*"]
     }
   },
   "include": [

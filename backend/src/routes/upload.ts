@@ -1,8 +1,8 @@
 import { Router } from "express";
 
 /* SUB ROUTES */
-import uploadFile from "./upload/file";
-import uploadPaste from "./upload/paste";
+import uploadFile from "@routes/upload/file";
+import uploadPaste from "@routes/upload/paste";
 
 const router: Router = Router();
 

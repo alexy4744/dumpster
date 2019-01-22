@@ -1,8 +1,12 @@
-import Request from "../../interfaces/Request";
+import Console from "@structures/Console";
+
+import Request from "@interfaces/Request";
 import { Response } from "express";
 
 import { Readable } from "stream";
 import uid from "uid-safe";
+
+const console: Console = new Console();
 
 export default (req: Request, res: Response): void => {
   if (!req.busboy) return;

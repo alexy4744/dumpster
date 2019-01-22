@@ -1,13 +1,14 @@
 import path from "path";
-import dotenv from "dotenv";
 
-dotenv.config({ path: path.join(__dirname, "../process.env") });
-
-import Request from "./interfaces/Request";
-import express, { Application, Response, NextFunction } from "express";
+import express, {
+  Application,
+  Response,
+  NextFunction
+} from "express";
 import session from "express-session";
 import bodyParser from "body-parser";
 import busboy from "connect-busboy";
+import Request from "@interfaces/Request";
 
 // @ts-ignore Do not install @types/connect-mongo as it conflicts with mongoose's type defs
 import connectMongo, { MongoStoreFactory } from "connect-mongo";
@@ -15,9 +16,9 @@ import { Mongoose } from "mongoose";
 import { GridFSBucket } from "mongodb";
 
 /* ROUTES */
-import resolve from "./routes/resolve";
-import upload from "./routes/upload";
-import serveWebApp from "./routes/serverWebApp";
+import resolve from "@routes/resolve";
+import upload from "@routes/upload";
+import serveWebApp from "@routes/serverWebApp";
 
 const MongoStore: MongoStoreFactory = connectMongo(session);
 
