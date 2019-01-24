@@ -38,8 +38,9 @@ export default async (req: Request, res: Response): Promise<void> => {
 
   file.forEach((document: File): void => {
     res.writeHead(200, {
-      "Content-Type": "image/jpg",
-      "Content-Length": document.length
+      "Content-Type": document.contentType,
+      "Content-Length": document.length,
+      "Content-Disposition": `attachment; filename="${document.filename}"`
     });
 
     req.fileBucket

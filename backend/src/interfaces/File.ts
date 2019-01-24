@@ -5,4 +5,5 @@ export default interface File {
   uploadDate: Date;
   filename: string;
   md5: string;
+  contentType: string;
 }

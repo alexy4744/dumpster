@@ -1,32 +1,35 @@
-import Console from "@structures/Console";
-
-import Request from "@interfaces/Request";
 import { Response } from "express";
 
-import { Readable } from "stream";
-import uid from "uid-safe";
+import multer from "multer";
+import GridFSStorageEngine from "@structures/GridFSStorageEngine";
 
-const console: Console = new Console();
+import Request from "@interfaces/Request";
+import MulterFile from "@interfaces/MulterFile";
+
+import Configuration from "@structures/Configuration";
+
+const upload = multer({
+  storage: new GridFSStorageEngine(),
+  limits: {
+    files: Configuration.MAX_FILES,
+    fileSize: Configuration.MAX_FILE_SIZE
+  }
+}).single("file"); // tslint:disable-line newline-per-chained-call
 
 export default (req: Request, res: Response): void => {
-  if (!req.busboy) return;
-
-  req.busboy.on("file", async (fieldname: string, file: Readable, filename: string): Promise<void> => {
-    const id: string = await uid(18);
-
-    file
-      .pipe(
-        req.fileBucket
-          .openUploadStreamWithId(id, filename)
-          .on("error", console.error.bind(this))
-      )
-      .on("error", console.error.bind(this));
+  upload(req, res, (result: MulterFile | Error | undefined): void => {
+    if (!result) {
+      res
+        .status(400)
+        .send("Empty upload!");
+    } else if (result instanceof Error) {
+      res
+        .status(400)
+        .send(result.message);
+    } else {
+      res
+        .status(200)
+        .send("File uploaded!");
+    }
   });
-
-  req.busboy.on("finish", (): void => {
-    req.session.totalFiles ? req.session.totalFiles = 1 : req.session.totalFiles++;
-    res.send("File Uploaded!");
-  });
-
-  req.pipe(req.busboy);
 };
