@@ -47,13 +47,13 @@ export default class Server {
   }
 
   private checkConfiguration(): void | never {
-    const message = (msg: string): string => `Expected a ${msg}, but received undefined or null instead`;
+    const message = (msg: string): string => `Expected a ${msg}, but received undefined/null/NaN instead`;
 
     if (!this.COOKIE_SECRET) throw new TypeError(message("string for cookie secret"));
 
-    for (const constant in Configuration) {
-      if (constant === null || constant === undefined) {
-        throw new TypeError(message(`a value for ${constant}`));
+    for (const Constant in Configuration) {
+      if (Configuration[Constant] === null || Configuration[Constant] === undefined || isNaN(Configuration[Constant])) {
+        throw new Error(message(`value for ${Constant}`));
       }
     }
   }
