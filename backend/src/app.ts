@@ -83,8 +83,8 @@ export default class Server {
 
   private loadRoutes(): void {
     this.app
-      .use("/resolve", resolve)
-      .use("/upload", upload)
+      .use(resolve)
+      .use(upload)
       .use(serveWebApp); // ALWAYS have to be the last route to prevent it from overriding other routes
   }
 }

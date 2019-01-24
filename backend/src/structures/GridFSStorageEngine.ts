@@ -1,7 +1,7 @@
+import uid from "uid-safe";
+
 import Request from "@interfaces/Request";
 import MulterFile from "@interfaces/MulterFile";
-
-import uid from "uid-safe";
 
 export default class GridFSStorageEngine {
   public async _handleFile(req: Request, file: MulterFile, callback: (result: MulterFile | Error) => void): Promise<void> { // tslint:disable-line max-line-length
