@@ -6,4 +6,7 @@ export default interface File {
   filename: string;
   md5: string;
   contentType: string;
+  metadata: {
+    [key: string]: any
+  };
 }

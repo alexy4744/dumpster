@@ -6,7 +6,6 @@ import express, {
   NextFunction
 } from "express";
 import session from "express-session";
-import bodyParser from "body-parser";
 import Request from "@interfaces/Request";
 
 import helmet from "helmet";
@@ -35,13 +34,16 @@ export default class Server {
 
   public constructor(mongoose: Mongoose) {
     this.mongoose = mongoose;
-    this.fileBucket = new GridFSBucket(this.mongoose.connection.db);
+    this.fileBucket = new GridFSBucket(this.mongoose.connection.db, {
+      bucketName: process.env.MONGODB_DB_NAME || "dumpster"
+    });
   }
 
   public initialize(): Application {
     this.checkConfiguration();
     this.loadMiddleware();
     this.loadRoutes();
+    this.loadErrorHandler();
 
     return this.app;
   }
@@ -49,11 +51,11 @@ export default class Server {
   private checkConfiguration(): void | never {
     const message = (msg: string): string => `Expected a ${msg}, but received undefined/null/NaN instead`;
 
-    if (!this.COOKIE_SECRET) throw new TypeError(message("string for cookie secret"));
+    if (!this.COOKIE_SECRET) throw new TypeError(message("string for COOKIE_SECRET"));
 
     for (const Constant in Configuration) {
       if (Configuration[Constant] === null || Configuration[Constant] === undefined || isNaN(Configuration[Constant])) {
-        throw new Error(message(`value for ${Constant}`));
+        throw new Error(message(`number for ${Constant}`));
       }
     }
   }
@@ -62,8 +64,6 @@ export default class Server {
     this.app
       .use(helmet())
       .use(express.static(path.join(__dirname, "../../frontend/dist/")))
-      .use(bodyParser.json())
-      .use(bodyParser.urlencoded({ extended: true }))
       .use(session({
         secret: this.COOKIE_SECRET,
         saveUninitialized: false, // don't create session until something stored
@@ -83,8 +83,22 @@ export default class Server {
 
   private loadRoutes(): void {
     this.app
+      .use("/upload", upload)
       .use(resolve)
-      .use(upload)
       .use(serveWebApp); // ALWAYS have to be the last route to prevent it from overriding other routes
+  }
+
+  private loadErrorHandler(): void {
+    /* Send the whole stack and log the error in the console if it is not in production mode */
+
+    const isProduction = process.env.PRODUCTION === "true" ? true : false;
+
+    this.app.use((error: Error, req: Request, res: Response): void => {
+      res
+        .status(500)
+        .send(isProduction ? error.message : error.stack);
+
+      if (isProduction) console.error(error);
+    });
   }
 }

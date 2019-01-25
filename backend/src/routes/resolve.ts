@@ -9,7 +9,7 @@ import Console from "@structures/Console";
 const console: Console = new Console();
 const router: Router = Router();
 
-router.get("/resolve/:id", async (req: Request, res: Response) => {
+router.get("/resolve/:id", async (req: Request, res: Response): Promise<void> => {
   const file: Cursor = req.fileBucket.find({ _id: req.params.id });
   const exists: number = await file
     .count()
@@ -39,7 +39,11 @@ router.get("/resolve/:id", async (req: Request, res: Response) => {
   file.forEach((document: File): void => {
     res.setHeader("Content-Type", document.contentType);
     res.setHeader("Content-Length", document.length);
-    res.setHeader("Content-Disposition", `attachment; filename="${document.filename}"`);
+    res.setHeader(
+      "Content-Disposition",
+      // If its a file, then make the browser download it, else just view it in the browser since it would be JSON
+      `${document.metadata.isFile ? "attachment" : "inline"}; filename="${document.filename}"`
+    );
 
     req.fileBucket
       .openDownloadStream(req.params.id)

@@ -1,37 +1,18 @@
-import { Router, Response } from "express";
-import multer from "multer";
+import { Router } from "express";
+import bodyParser from "body-parser";
 
-import Request from "@interfaces/Request";
-import MulterFile from "@interfaces/MulterFile";
-
-import Configuration from "@structures/Configuration";
-import GridFSStorageEngine from "@structures/GridFSStorageEngine";
+import uploadFile from "@routes/upload/file";
+import uploadPaste from "@routes/upload/paste";
+import Configuration from "@/structures/Configuration";
 
 const router: Router = Router();
-const upload = multer({
-  storage: new GridFSStorageEngine(),
-  limits: {
-    files: Configuration.MAX_FILES,
-    fileSize: Configuration.MAX_FILE_SIZE
-  }
-}).single("file"); // tslint:disable-line newline-per-chained-call
 
-router.post("/upload", (req: Request, res: Response) => {
-  upload(req, res, (result: MulterFile | Error | undefined): void => {
-    if (!result) {
-      res
-        .status(400)
-        .send("Empty upload!");
-    } else if (result instanceof Error) {
-      res
-        .status(400)
-        .send(result.message);
-    } else {
-      res
-        .status(200)
-        .send("File uploaded!");
-    }
-  });
-});
+router
+  .post("/file", uploadFile)
+
+  /* Only parse the body for the /paste route */
+  .use(bodyParser.json({ limit: Configuration.MAX_PASTE_SIZE }))
+  .use(bodyParser.urlencoded({ limit: Configuration.MAX_PASTE_SIZE, extended: true }))
+  .post("/paste", uploadPaste);
 
 export default router;

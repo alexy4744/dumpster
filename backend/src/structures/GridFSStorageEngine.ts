@@ -2,23 +2,23 @@ import uid from "uid-safe";
 
 import Request from "@interfaces/Request";
 import MulterFile from "@interfaces/MulterFile";
+import { GridFSBucketWriteStream } from "mongodb";
 
 export default class GridFSStorageEngine {
   public async _handleFile(req: Request, file: MulterFile, callback: (result: MulterFile | Error) => void): Promise<void> { // tslint:disable-line max-line-length
     try {
       const id: string = await uid(4); // tslint:disable-line newline-per-chained-call
+      const uploadStream: GridFSBucketWriteStream = req.fileBucket.openUploadStreamWithId(id, file.originalname, {
+        contentType: file.mimetype,
+        metadata: {
+          isFile: true
+        }
+      });
 
-      // Add an uid field to the file so that it can be used as a reference to delete the file in _removeFile()
       file.uid = id;
+      file.stream.pipe(uploadStream);
 
-      file.stream
-        .pipe(
-          req.fileBucket
-            .openUploadStreamWithId(id, file.originalname, {
-              contentType: file.mimetype
-            })
-            .on("error", callback)
-        )
+      uploadStream
         .on("error", callback)
         .on("finish", callback);
     } catch (error) {
