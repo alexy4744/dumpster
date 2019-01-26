@@ -9,7 +9,13 @@ import Request from "@interfaces/Request";
 const contentType: string = "application/json";
 
 export default async (req: Request, res: Response): Promise<void> => {
-  if (req.headers["content-type"] !== contentType) return;
+  if (req.headers["content-type"] !== contentType) {
+    res
+      .status(415)
+      .send(`Endpoint only accepts ${contentType}, but received ${req.headers["content-type"]}!`);
+
+    return;
+  }
 
   const pasteData: string = req.body.paste;
 
