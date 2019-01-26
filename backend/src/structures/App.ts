@@ -20,7 +20,7 @@ import resolve from "@routes/resolve";
 import upload from "@routes/upload";
 import serveWebApp from "@routes/serverWebApp";
 
-import Configuration from "@/structures/Configuration";
+import Configuration from "@structures/Configuration";
 
 const MongoStore: MongoStoreFactory = connectMongo(session);
 
@@ -40,24 +40,11 @@ export default class Server {
   }
 
   public initialize(): Application {
-    this.checkConfiguration();
     this.loadMiddleware();
     this.loadRoutes();
     this.loadErrorHandler();
 
     return this.app;
-  }
-
-  private checkConfiguration(): void | never {
-    const message = (msg: string): string => `Expected a ${msg}, but received undefined/null/NaN instead`;
-
-    if (!this.COOKIE_SECRET) throw new TypeError(message("string for COOKIE_SECRET"));
-
-    for (const Constant in Configuration) {
-      if (Configuration[Constant] === null || Configuration[Constant] === undefined || isNaN(Configuration[Constant])) {
-        throw new Error(message(`number for ${Constant}`));
-      }
-    }
   }
 
   private loadMiddleware(): void {
@@ -90,7 +77,6 @@ export default class Server {
 
   private loadErrorHandler(): void {
     /* Send the whole stack and log the error in the console if it is not in production mode */
-
     const isProduction = process.env.PRODUCTION === "true" ? true : false;
 
     this.app.use((error: Error, req: Request, res: Response): void => {
@@ -98,7 +84,7 @@ export default class Server {
         .status(500)
         .send(isProduction ? error.message : error.stack);
 
-      if (isProduction) console.error(error);
+      if (!isProduction) console.error(error);
     });
   }
 }
