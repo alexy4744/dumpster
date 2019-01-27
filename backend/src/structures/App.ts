@@ -9,11 +9,11 @@ import session from "express-session";
 import Request from "@interfaces/Request";
 
 import helmet from "helmet";
+import bodyParser from "body-parser";
 
 // @ts-ignore Do not install @types/connect-mongo as it conflicts with mongoose's type defs
 import connectMongo, { MongoStoreFactory } from "connect-mongo";
-import { Mongoose } from "mongoose";
-import { GridFSBucket } from "mongodb";
+import { GridFSBucket, Db } from "mongodb";
 
 /* ROUTES */
 import resolve from "@routes/resolve";
@@ -24,17 +24,20 @@ import Configuration from "@structures/Configuration";
 
 const MongoStore: MongoStoreFactory = connectMongo(session);
 
-export default class Server {
+export default class App {
   public readonly app: Application = express();
+  public readonly isProduction: boolean;
 
   private readonly COOKIE_SECRET: string | undefined = process.env.COOKIE_SECRET;
 
-  private readonly mongoose: Mongoose;
+  private readonly database: Db;
   private readonly fileBucket: GridFSBucket;
 
-  public constructor(mongoose: Mongoose) {
-    this.mongoose = mongoose;
-    this.fileBucket = new GridFSBucket(this.mongoose.connection.db, {
+  public constructor(database: Db) {
+    this.isProduction = process.env.NODE_ENV === "production" ? true : false;
+
+    this.database = database;
+    this.fileBucket = new GridFSBucket(this.database, {
       bucketName: process.env.MONGODB_DB_NAME || "dumpster"
     });
   }
@@ -51,18 +54,20 @@ export default class Server {
     this.app
       .use(helmet())
       .use(express.static(path.join(__dirname, "../../frontend/dist/")))
+      .use(bodyParser.json({ limit: Configuration.MAX_PASTE_SIZE }))
       .use(session({
         secret: this.COOKIE_SECRET,
         saveUninitialized: false, // don't create session until something stored
         resave: false, // don't save session if unmodified
         store: new MongoStore({
-          mongooseConnection: this.mongoose.connection,
+          db: this.database,
           ttl: Configuration.SESSION_TTL
         })
       }))
       .use((req: Request, res: Response, next: NextFunction): void => {
-        req.mongoose = this.mongoose;
+        req.database = this.database;
         req.fileBucket = this.fileBucket;
+        req.isProduction = this.isProduction;
 
         next();
       });
@@ -76,15 +81,14 @@ export default class Server {
   }
 
   private loadErrorHandler(): void {
-    /* Send the whole stack and log the error in the console if it is not in production mode */
-    const isProduction = process.env.PRODUCTION === "true" ? true : false;
-
-    this.app.use((error: Error, req: Request, res: Response): void => {
+    this.app.use((error: Error, req: Request, res: Response, next: NextFunction): void => {
       res
         .status(500)
-        .send(isProduction ? error.message : error.stack);
+        .send({
+          message: this.isProduction ? error.message : error.stack
+        });
 
-      if (!isProduction) console.error(error);
+      if (!this.isProduction) console.error(error);
     });
   }
 }

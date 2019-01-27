@@ -1,4 +1,5 @@
 // tslint:disable: no-var-requires
+
 require("module-alias/register");
 
 import fs from "fs";
@@ -10,7 +11,7 @@ import https from "https";
 const dotenv = require("dotenv").config({ path: path.join(__dirname, "../process.env") });
 
 import { Application } from "express";
-import mongoose, { Mongoose } from "mongoose";
+import { MongoClient, Db } from "mongodb";
 
 import App from "@structures/App";
 import Console from "@structures/Console";
@@ -20,7 +21,7 @@ const console: Console = new Console();
 
 checkConfiguration();
 connectToDatabase()
-  .then((database: Mongoose): Promise<void> => createServer(new App(database).initialize()))
+  .then((database: Db): Promise<void> => createServer(new App(database).initialize()))
   .catch(console.error);
 
 function checkConfiguration(): void | never {
@@ -35,22 +36,20 @@ function checkConfiguration(): void | never {
   }
 }
 
-async function connectToDatabase(): Promise<Mongoose> {
+async function connectToDatabase(): Promise<Db> {
   const MONGODB_ADDRESS: string = process.env.MONGODB_ADDRESS || "mongodb://localhost:27017";
   const MONGODB_DB_NAME: string = process.env.MONGODB_DB_NAME || "dumpster";
 
-  return new Promise((resolve, reject): void => {
-    mongoose.connection.on("open", console.log.bind(this, `[MONGOOSE] Connected to ${MONGODB_ADDRESS}!`));
-    mongoose.connection.on("error", console.error);
+  try {
+    const mongo: MongoClient = await MongoClient.connect(MONGODB_ADDRESS, { useNewUrlParser: true });
+    const database: Db = mongo.db(MONGODB_DB_NAME);
 
-    mongoose.connect(MONGODB_ADDRESS, {
-      dbName: MONGODB_DB_NAME,
-      useNewUrlParser: true
-    }, (error: Error): void => {
-      if (error) return reject(error);
-      resolve(mongoose);
-    });
-  });
+    console.log(`[MONGODB] Connected to ${MONGODB_ADDRESS}!`);
+
+    return Promise.resolve(database);
+  } catch (error) {
+    return Promise.reject(error);
+  }
 }
 
 async function createServer(app: Application): Promise<void> {
@@ -68,7 +67,7 @@ async function createServer(app: Application): Promise<void> {
     .createServer(app)
     .listen(
       Configuration.HTTP_PORT,
-      console.log.bind(this, `Server started on port ${Configuration.HTTP_PORT} (HTTP)`)
+      console.log.bind(this, `[EXPRESS] Started on port ${Configuration.HTTP_PORT} (HTTP)`)
     );
 
   if (CERTIFICATES.key && CERTIFICATES.cert) {
@@ -76,7 +75,7 @@ async function createServer(app: Application): Promise<void> {
       .createServer(CERTIFICATES, app)
       .listen(
         Configuration.HTTPS_PORT,
-        console.log.bind(this, `Server started on port ${Configuration.HTTPS_PORT} (HTTPS)`)
+        console.log.bind(this, `[EXPRESS] Started on port ${Configuration.HTTPS_PORT} (HTTPS)`)
       );
   }
 }

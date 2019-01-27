@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Response, NextFunction } from "express";
 import { Readable } from "stream";
 import { GridFSBucketWriteStream } from "mongodb";
 
@@ -6,48 +6,15 @@ import uid from "uid-safe";
 
 import Request from "@interfaces/Request";
 
+import bufferToReadable from "@utils/bufferToReadable";
+
 const contentType: string = "application/json";
 
-export default async (req: Request, res: Response): Promise<void> => {
-  if (req.headers["content-type"] !== contentType) {
-    res
-      .status(415)
-      .send(`Endpoint only accepts ${contentType}, but received ${req.headers["content-type"]}!`);
+export default async (data: string | Error, req: Request, res: Response, next: NextFunction): Promise<void> => {
+  if (data instanceof Error) return next(data);
 
-    return;
-  }
-
-  const pasteData: string = req.body.paste;
-
-  if (!pasteData) {
-    res
-      .status(400)
-      .send("No paste data found in body!");
-
-    return;
-  }
-
-  let stringified: string;
-
-  try {
-    stringified = JSON.stringify({ paste: pasteData });
-  } catch (error) {
-    res
-      .status(400)
-      .send(error.message);
-
-    return;
-  }
-
-  /* Turn the data into a buffer then wrap it as a readable stream so that it can be saved with the GridFS bucket
-    https://stackoverflow.com/questions/13230487/converting-a-buffer-into-a-readablestream-in-nodejs */
-  const buffer: Buffer = Buffer.from(stringified);
-  const readableStream: Readable = new Readable(); // Create a new readable stream with no data
-
-  readableStream.push(buffer); // Put the buffer into the readable stream
-  readableStream.push(null);  // Must push null at the end to indicate that it is finished outputting data
-
-  const id: string = await uid(4); // tslint:disable-line newline-per-chained-call
+  const readableStream: Readable = bufferToReadable(Buffer.from(data));
+  const id: string = await uid(4);
   const uploadStream: GridFSBucketWriteStream = req.fileBucket.openUploadStreamWithId(id, id, {
     contentType,
     metadata: {
@@ -57,6 +24,7 @@ export default async (req: Request, res: Response): Promise<void> => {
 
   readableStream // Now save it to the GridFS bucket
     .pipe(uploadStream)
-    .on("error", (error: Error): Response => res.status(500).send(error.message)) // tslint:disable-line
-    .on("finish", (): Response => res.status(200).send("File uploaded!")); // tslint:disable-line
+    .on("error", next)
+    // tslint:disable-next-line:newline-per-chained-call
+    .on("finish", (): Response => res.status(200).send({ message: "File uploaded!" }));
 };

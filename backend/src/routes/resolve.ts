@@ -1,62 +1,35 @@
-import { Router, Response } from "express";
+import { Router, Response, NextFunction } from "express";
 import { Cursor } from "mongodb";
 
 import Request from "@interfaces/Request";
 import File from "@interfaces/File";
 
-import Console from "@structures/Console";
+import findFile from "@middleware/findFile";
 
-const console: Console = new Console();
 const router: Router = Router();
 
-router.get("/resolve/:id", async (req: Request, res: Response): Promise<void> => {
-  const file: Cursor = req.fileBucket.find({ _id: req.params.id });
-  const exists: number = await file
-    .count()
-    .catch((error: Error): number => {
-      console.error(error);
+router.get("/resolve/:id", [
+  findFile, // findFile is a middleware that finds the file and calls next() with the file as a parameter
+  async (file: Cursor | Error, req: Request, res: Response, next: NextFunction): Promise<void> => {
+    if (file instanceof Error) return next(file);
 
-      // Just send back a 404 error since it can't verify if the file exists or not
-      return 0; // tslint:disable-line: newline-before-return
+    // File is a cursor so even though there should only be one file, it has to be iterated
+    file.forEach((document: File): void => {
+      res.setHeader("Content-Type", document.contentType);
+      res.setHeader("Content-Length", document.length);
+      res.setHeader(
+        "Content-Disposition",
+        // If its a file, then make the browser download it, else just view it in the browser since it would be JSON
+        `${document.metadata.isFile ? "attachment" : "inline"}; filename="${document.filename}"`
+      );
+
+      req.fileBucket
+        .openDownloadStream(req.params.id)
+        .pipe(res)
+        .on("finish", res.status.bind(this, 200))
+        .on("error", next);
     });
-
-  if (!exists) {
-    res
-      .status(404)
-      .send("File not found!");
-
-    return;
-  }
-
-  if (exists > 1) {
-    res
-      .status(500)
-      .send("Found more than one file with the same id...");
-
-    return;
-  }
-
-  file.forEach((document: File): void => {
-    res.setHeader("Content-Type", document.contentType);
-    res.setHeader("Content-Length", document.length);
-    res.setHeader(
-      "Content-Disposition",
-      // If its a file, then make the browser download it, else just view it in the browser since it would be JSON
-      `${document.metadata.isFile ? "attachment" : "inline"}; filename="${document.filename}"`
-    );
-
-    req.fileBucket
-      .openDownloadStream(req.params.id)
-      .pipe(res)
-      .on("finish", res.status.bind(this, 200))
-      .on("error", (error: Error): void => {
-        res
-          .status(500)
-          .send(error.message);
-
-        console.error(error);
-      });
-  });
-});
+  }]
+);
 
 export default router;

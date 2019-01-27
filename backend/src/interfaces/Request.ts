@@ -1,8 +1,8 @@
 import { Request } from "express";
-import { GridFSBucket } from "mongodb";
-import { Mongoose } from "mongoose";
+import { GridFSBucket, Db } from "mongodb";
 
-export default interface IncommingRequest extends Request {
+export default interface IncomingRequest extends Request {
+  database: Db;
   fileBucket: GridFSBucket;
-  mongoose: Mongoose;
+  isProduction: boolean;
 }

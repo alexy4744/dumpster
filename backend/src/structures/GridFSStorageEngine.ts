@@ -7,7 +7,7 @@ import { GridFSBucketWriteStream } from "mongodb";
 export default class GridFSStorageEngine {
   public async _handleFile(req: Request, file: MulterFile, callback: (result: MulterFile | Error) => void): Promise<void> { // tslint:disable-line max-line-length
     try {
-      const id: string = await uid(4); // tslint:disable-line newline-per-chained-call
+      const id: string = await uid(4);
       const uploadStream: GridFSBucketWriteStream = req.fileBucket.openUploadStreamWithId(id, file.originalname, {
         contentType: file.mimetype,
         metadata: {

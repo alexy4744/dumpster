@@ -15,6 +15,7 @@
       "@models/*": ["src/models/*"],
       "@structures/*": ["src/structures/*"],
       "@routes/*": ["src/routes/*"],
+      "@middleware/*": ["src/middleware/*"],
       "@utils/*": ["src/utils/*"],
       "@interfaces/*": ["src/interfaces/*"]
     }

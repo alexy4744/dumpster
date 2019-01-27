@@ -17,7 +17,7 @@ router.get("*", async (req: Request, res: Response, next: NextFunction): Promise
     await fs.promises.stat(file); // If this doesn't throw an error, then the file exists.
     res.sendFile(file);
   } catch (error) { // Else toss the error to the error handler
-    next();
+    next(new Error(`Can't find index.html!`));
   }
 });
 
