@@ -1,19 +1,13 @@
-import EditorState from "../../interfaces/EditorState";
+import State from "@/store/interfaces/State";
+import Payload from "@/store/interfaces/Payload";
 
 export default {
-  setTheme(state: EditorState, theme: string): void {
-    state.theme = theme;
+  setSetting(state: State, { key, value }: Payload) {
+    state[key] = value;
   },
 
-  setLanguage(state: EditorState, language: string): void {
-    state.language = language;
-  },
-
-  enableLineNumbers(state: EditorState): void {
-    state.lineNumbers = true;
-  },
-
-  disableLineNumbers(state: EditorState): void {
-    state.lineNumbers = false;
+  setStyle(state: State, { key, value }: Payload) {
+    if (typeof value === "string") return;
+    state.styles[key] = value;
   }
 };

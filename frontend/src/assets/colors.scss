@@ -1,0 +1,36 @@
+// Color palette from https://github.com/ayu-theme/ayu-colors
+
+$colors: (
+  // COMMON
+  "background": #0A0E14, // common.bg
+  "foreground": #B3B1AD, // common.fg
+  "accent": #E6B450, // common.accent
+
+  // COLORS
+  "blue": #39BAE6, // syntax.tag
+  "orange": #FFB454, // syntax.func
+  "green": #C2D94C, // syntax.string
+  "pale-green": #95E6CB, // syntax.regexp
+  "gray": #626A73, // syntax.comment
+  "yellow": #FFEE99 // syntax.constat
+);
+
+// Create CSS classes based on the color map of names and hex codes
+@each $name, $value in $colors {
+  .color--#{$name} {
+    color: $value;
+  }
+
+  .background-color--#{$name} {
+    background-color: $value;
+  }
+}
+
+@function color($name) {
+  @if map-has-key($colors, $name) {
+    @return map-get($colors, $name);
+  }
+
+  @warn "'#{$name}' doesn't exists!"; // Send a warning to compiler
+  @return null;
+}

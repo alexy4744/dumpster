@@ -1,34 +1,32 @@
-import Actions from "../../interfaces/Actions";
-import hljs from "highlight.js";
+import Actions from "@/store/interfaces/Actions";
+import Payload from "@/store/interfaces/Payload";
 
-const themes: string[] = [
-  "default",
-  "atom-one-dark",
-  "atom-one-light"
-];
-
-/* First param is "context", but destructued, so context.commit, context.state => commit, state */
 export default {
-  changeTheme({ commit }: Actions, theme: string): void {
-    if (!themes.includes(theme)) {
-      console.error(`Unknown theme provided (${theme}). Must be one of ${themes.join(", ")}`);
-      return;
+  changeSetting({ commit, state }: Actions, { key, value }: Payload) {
+    if (!state[key]) {
+      return Promise.reject(
+        new TypeError(`${key} was provided while changing settings, but it is not a valid state property!`)
+      );
     }
 
-    commit("setTheme", theme);
+    commit("setSetting", { key, value });
+
+    return Promise.resolve();
   },
 
-  changeLanguage({ commit }: Actions, language: string): void {
-    if (!hljs.listLanguages().includes(language)) {
-      console.error(`Unknown langauge provided (${language}). Must be one of ${hljs.listLanguages().join(", ")}`);
-      return;
+  changeStyle({ commit, state }: Actions, { key, value }: Payload) {
+    if (!state.styles[key]) {
+      return Promise.reject(
+        new TypeError(`${key} was provided while changing styles, but it is not a style property!`)
+      );
+    } else if (typeof value === "string") {
+      return Promise.reject(
+        new TypeError(`Value ${value} provided for ${key} while changing styles was not safe or is not a integer!`)
+      );
     }
 
-    commit("setLanguage", language);
-  },
+    commit("setStyle", { key, value });
 
-  toggleLineNumbers({ commit }: Actions, shouldEnable: boolean): void {
-    if (shouldEnable) commit("enableLineNumbers");
-    else commit("disableLineNumbers");
+    return Promise.resolve();
   }
 };

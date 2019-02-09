@@ -1,5 +1,5 @@
 import { Commit, Dispatch } from "vuex";
-import State from "./WindowsState";
+import State from "@/store/interfaces/State";
 
 export default interface Action {
   commit: Commit;

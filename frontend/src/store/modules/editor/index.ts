@@ -1,14 +1,6 @@
-import actions from "./actions"; // Commits changes, which then runs mutations on the state.
-import mutations from "./mutations"; // Actually changes the value within the state.
-
-/* Interfaces */
-import EditorState from "../../interfaces/EditorState";
-
-const state: EditorState = {
-  theme: null,
-  language: null,
-  lineNumbers: true
-};
+import state from "@/store/modules/editor/state";
+import actions from "@/store/modules/editor/actions";
+import mutations from "@/store/modules/editor/mutations";
 
 export default {
   namespaced: true,

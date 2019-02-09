@@ -12,16 +12,23 @@ export default class App extends Vue {}
 </script>
 
 <style lang="scss">
-@import "assets/css/colors";
+@import "@/assets/colors.scss";
 
-body {
-	background: linear-gradient(300deg, #1e272e, #0F1419);
-	background-size: 100vw 100vh;
-  overflow: auto;
+@font-face {
+  font-family: "Fira Code";
+  src: url("/FiraCode-Regular.otf");
+  font-weight: 400;
+  font-style: normal;
 }
 
-#app {
-  font-family: Helvetica, Arial, sans-serif;
-  color: white;
+html {
+  -ms-text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  background-color: color("background");
 }
 </style>

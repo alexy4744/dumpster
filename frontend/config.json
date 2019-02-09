@@ -1,0 +1,9 @@
+{
+  "PRSIMJS_LANGUAGES": [
+    "clike", "c", "cpp", "csharp", "css", "dart", "elixir",
+    "erlang", "go", "java", "javascript", "json", "jsx",
+    "kotlin", "markdown", "markup", "lua", "php", "python",
+    "pug", "ruby", "rust", "sass", "scss", "swift", "tsx",
+    "typescript", "visual-basic"
+  ]
+}

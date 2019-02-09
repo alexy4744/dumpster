@@ -1,21 +1,14 @@
-import Vue from "vue";
-import App from "./App.vue";
-import router from "./router";
-import store from "./store/index";
+import Vue, { CreateElement, VNode } from "vue";
+import App from "@/App.vue";
+import router from "@/router";
+import store from "@/store/index";
 
-import "./registerServiceWorker";
-import "./assets/css/layout.scss";
+import "@/registerServiceWorker";
 
 Vue.config.productionTip = false;
-
-// Check whether it is a valid vue route, if it isn't redirect to the 404 page.
-router.beforeEach((to, _, next) => {
-  if (!to.name || !to.matched.length) return next("/404");
-  return next();
-});
 
 new Vue({
   router,
   store,
-  render: (h) => h(App),
+  render: (h: CreateElement): VNode => h(App),
 }).$mount("#app");
