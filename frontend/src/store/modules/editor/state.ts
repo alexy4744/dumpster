@@ -8,18 +8,21 @@ const state: State = {
   LANGUAGE: LANGUAGES[Math.floor(Math.random() * LANGUAGES.length)],
 
   styles: {
-    input: {
+    all: {
       fontSize: "16px",
-      lineHeight: "24px"
+      lineHeight: "24px",
+    },
+
+    input: {
+      marginLeft: "40px"
     },
 
     prism: {
-      fontSize: "16px",
-      lineHeight: "24px"
+      marginLeft: "40px"
     },
 
     lineNumbers: {
-      width: "40px"
+      width: "40px",
     }
   }
 };
@@ -46,4 +49,4 @@ for (const property in state) {
   }
 }
 
-export default (): State => state;
+export default state;

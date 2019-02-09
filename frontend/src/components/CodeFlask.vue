@@ -124,7 +124,13 @@ export default class CodeFlask extends Vue {
   private applyStyles(): void {
     for (const reference in this.styles) {
       for (const styleName in this.styles[reference]) {
-        this.$refs[reference].style[styleName] = this.styles[reference][styleName];
+        if (reference === "all") {
+          for (const ref in this.$refs) {
+            this.$refs[ref].style[styleName] = this.styles[reference][styleName]
+          }
+        } else if (this.$refs[reference]) {
+          this.$refs[reference].style[styleName] = this.styles[reference][styleName];
+        }
       }
     }
   }
@@ -189,16 +195,12 @@ export default class CodeFlask extends Vue {
 <style lang="scss" scoped>
 @import "@/assets/colors.scss";
 
-$font-size: 16px;
-$line-height: 8px; // How much space between each line
-$line-numbers-width: 40px;
 $margin-size: 25px; // How much space around the whole component
 
 .codeflask {
   width: calc(100vw - #{$margin-size * 2});
   height: calc(100vh - #{$margin-size * 3});
   position: relative; // Anchor element for absolute positioning
-  font-size: $font-size;
   font-family: "Fira Code", monospace;
   margin: 0 $margin-size;
   overflow: hidden;
@@ -211,18 +213,15 @@ $margin-size: 25px; // How much space around the whole component
   height: inherit;
   font-size: inherit;
   font-family: inherit;
-  line-height: calc(#{$font-size} + #{$line-height});
 }
 
 .codeflask__prism,
 .codeflask__text-input {
-  width: calc(100vw - #{$line-numbers-width} - #{$margin-size * 2});
+  width: calc(100vw - 40px - #{$margin-size * 2});
   position: absolute;
-  margin-left: $line-numbers-width;
 }
 
 .codeflask__line-numbers {
-  width: $line-numbers-width;
   position: absolute;
   background-color: color("background");
   color: lighten(color("background"), 50%);

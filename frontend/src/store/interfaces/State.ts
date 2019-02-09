@@ -9,25 +9,5 @@ export default interface State {
     [key: string]: {
       [key: string]: string;
     }
-
-    input: {
-      [key: string]: string;
-
-      fontSize: string;
-      lineHeight: string;
-    },
-
-    prism: {
-      [key: string]: string;
-
-      fontSize: string;
-      lineHeight: string;
-    },
-
-    lineNumbers: {
-      [key: string]: string;
-
-      width: string;
-    }
   };
 }

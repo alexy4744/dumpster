@@ -2,22 +2,22 @@
   <div>
     <Toolbar>
       <Category title="File">
-        <CategoryItem name="New Paste"/>
-        <CategoryItem name="New Upload"/>
+        <Item name="New Paste"/>
+        <Item name="New Upload"/>
 
         <br>
 
-        <CategoryItem name="Save"/>
+        <Item name="Save"/>
       </Category>
 
       <Category title="Edit">
-        <CategoryItem name="Language"/>
-        <CategoryItem name="Theme"/>
+        <Item name="Language"/>
+        <Item name="Theme"/>
       </Category>
 
       <Category title="Help">
-        <CategoryItem name="Changelog"/>
-        <CategoryItem name="About"/>
+        <Item name="Changelog"/>
+        <Item name="About"/>
       </Category>
     </Toolbar>
 
@@ -30,14 +30,14 @@ import { Component, Vue } from "vue-property-decorator";
 import CodeFlask from "@/components/CodeFlask.vue";
 import Toolbar from "@/components/Toolbar.vue";
 import Category from "@/components/Toolbar/Category.vue";
-import CategoryItem from "@/components/Toolbar/Category/CategoryItem.vue";
+import Item from "@/components/Toolbar/Category/Item.vue";
 
 @Component({
   components: {
     CodeFlask,
     Toolbar,
     Category,
-    CategoryItem
+    Item
   }
 })
 export default class Home extends Vue {}

@@ -1,13 +1,14 @@
 import State from "@/store/interfaces/State";
 import Payload from "@/store/interfaces/Payload";
+import StylePayload from "@/store/interfaces/StylePayload";
 
 export default {
   setSetting(state: State, { key, value }: Payload) {
     state[key] = value;
   },
 
-  setStyle(state: State, { key, value }: Payload) {
+  setStyle(state: State, { reference, key, value }: StylePayload) {
     if (typeof value === "string") return;
-    state.styles[key] = value;
+    state.styles[reference][key] = value;
   }
 };
