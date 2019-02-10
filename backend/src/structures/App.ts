@@ -15,20 +15,21 @@ import bodyParser from "body-parser";
 import connectMongo, { MongoStoreFactory } from "connect-mongo";
 import { GridFSBucket, Db } from "mongodb";
 
+/* MIDDLEWARE */
+import allowCORS from "@middleware/allowCORS";
+
 /* ROUTES */
 import resolve from "@routes/resolve";
 import upload from "@routes/upload";
 import serveWebApp from "@routes/serverWebApp";
 
-import Configuration from "@structures/Configuration";
-
+// tslint:disable-next-line: no-var-requires
+const Configuration = require("@/../../config.json");
 const MongoStore: MongoStoreFactory = connectMongo(session);
 
 export default class App {
   public readonly app: Application = express();
   public readonly isProduction: boolean;
-
-  private readonly COOKIE_SECRET: string | undefined = process.env.COOKIE_SECRET;
 
   private readonly database: Db;
   private readonly fileBucket: GridFSBucket;
@@ -53,15 +54,16 @@ export default class App {
   private loadMiddleware(): void {
     this.app
       .use(helmet())
-      .use(express.static(path.join(__dirname, "../../frontend/dist/")))
-      .use(bodyParser.json({ limit: Configuration.MAX_PASTE_SIZE }))
+      .use(allowCORS)
+      .use(express.static(path.join(__dirname, "../../../frontend/dist/")))
+      .use(bodyParser.json({ limit: Configuration.MAX_PASTE_SIZE * 1024 * 1024 }))
       .use(session({
-        secret: this.COOKIE_SECRET,
+        secret: process.env.COOKIE_SECRET,
         saveUninitialized: false, // don't create session until something stored
         resave: false, // don't save session if unmodified
         store: new MongoStore({
           db: this.database,
-          ttl: Configuration.SESSION_TTL
+          ttl: process.env.SESSION_TTL
         })
       }))
       .use((req: Request, res: Response, next: NextFunction): void => {

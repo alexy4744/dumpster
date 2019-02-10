@@ -1,5 +1,5 @@
 <template>
-  <div class="list_action">
+  <div class="list_action" @click="$emit('click', arguments)">
     <span class="action__name">{{ name }}</span>
   </div>
 </template>

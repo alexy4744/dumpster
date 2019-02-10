@@ -32,7 +32,11 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "tests/**/*.ts",
-    "tests/**/*.tsx", "src/assets/languages.ts", "src/assets/welcome/javascript.ts", "src/assets/welcome/markup.ts", "src/assets/welcome/BASE.ts"
+    "tests/**/*.tsx",
+    "src/assets/languages.ts",
+    "src/assets/welcome/javascript.ts",
+    "src/assets/welcome/markup.ts",
+    "src/assets/welcome/BASE.ts"
   ],
   "exclude": [
     "node_modules"

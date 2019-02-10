@@ -22,9 +22,18 @@ export default async (data: string | Error, req: Request, res: Response, next: N
     }
   });
 
-  readableStream // Now save it to the GridFS bucket
+  readableStream
     .pipe(uploadStream)
     .on("error", next)
-    // tslint:disable-next-line:newline-per-chained-call
-    .on("finish", (): Response => res.status(200).send({ message: "File uploaded!" }));
+    .on("finish", (): void => {
+      res
+        .status(200)
+        .send({
+          message: "File uploaded!",
+          paste: {
+            _id: id,
+            data: JSON.parse(data).paste
+          }
+        });
+    });
 };

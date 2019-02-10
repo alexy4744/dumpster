@@ -28,7 +28,6 @@ const state: State = {
 };
 
 // Apply local storage values to the state
-// tslint:disable-next-line: forin
 for (const property in state) {
   if (property !== "styles") {
     const item = localStorage.getItem(property);
@@ -36,14 +35,16 @@ for (const property in state) {
 
     state[property] = item;
   } else {
-    // tslint:disable-next-line: forin
     for (const reference in state[property]) { // input, prism, lineNumbers...
-      // tslint:disable-next-line: forin
-      for (const prop in state[property][reference]) { // fontSize, lineHeight, width...
-        const userStyle = localStorage.getItem(`${reference}-${prop}`);
-        if (!userStyle || userStyle === state[property][reference][prop]) continue;
+      if (state[property].hasOwnProperty(reference)) {
+        for (const prop in state[property][reference]) { // fontSize, lineHeight, width...
+          if (state[property][reference].hasOwnProperty(prop)) {
+            const userStyle = localStorage.getItem(`${reference}-${prop}`);
+            if (!userStyle || userStyle === state[property][reference][prop]) continue;
 
-        state[property][reference][prop] = userStyle;
+            state[property][reference][prop] = userStyle;
+          }
+        }
       }
     }
   }

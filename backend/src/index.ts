@@ -1,40 +1,26 @@
 // tslint:disable: no-var-requires
 
+import path from "path";
+
 require("module-alias/register");
+// tslint:disable-next-line:newline-per-chained-call
+require("dotenv").config({ path: path.join(__dirname, "../process.env") });
 
 import fs from "fs";
-import path from "path";
 import http from "http";
 import https from "https";
-
-// tslint:disable-next-line: newline-per-chained-call
-const dotenv = require("dotenv").config({ path: path.join(__dirname, "../process.env") });
 
 import { Application } from "express";
 import { MongoClient, Db } from "mongodb";
 
 import App from "@structures/App";
 import Console from "@structures/Console";
-import Configuration from "@structures/Configuration";
 
 const console: Console = new Console();
 
-checkConfiguration();
 connectToDatabase()
   .then((database: Db): Promise<void> => createServer(new App(database).initialize()))
   .catch(console.error);
-
-function checkConfiguration(): void | never {
-  const message = (msg: string): string => `Expected a ${msg}, but received undefined/null/NaN instead`;
-
-  if (!dotenv.parsed.COOKIE_SECRET) throw new TypeError(message("string for COOKIE_SECRET"));
-
-  for (const Constant in Configuration) {
-    if (Configuration[Constant] === null || Configuration[Constant] === undefined || isNaN(Configuration[Constant])) {
-      throw new Error(message(`number for ${Constant}`));
-    }
-  }
-}
 
 async function connectToDatabase(): Promise<Db> {
   const MONGODB_ADDRESS: string = process.env.MONGODB_ADDRESS || "mongodb://localhost:27017";
@@ -66,16 +52,16 @@ async function createServer(app: Application): Promise<void> {
   http
     .createServer(app)
     .listen(
-      Configuration.HTTP_PORT,
-      console.log.bind(this, `[EXPRESS] Started on port ${Configuration.HTTP_PORT} (HTTP)`)
+      process.env.HTTP,
+      console.log.bind(this, `[EXPRESS] Started on port ${process.env.HTTP} (HTTP)`)
     );
 
   if (CERTIFICATES.key && CERTIFICATES.cert) {
     https
       .createServer(CERTIFICATES, app)
       .listen(
-        Configuration.HTTPS_PORT,
-        console.log.bind(this, `[EXPRESS] Started on port ${Configuration.HTTPS_PORT} (HTTPS)`)
+        process.env.HTTPS,
+        console.log.bind(this, `[EXPRESS] Started on port ${process.env.HTTPS} (HTTPS)`)
       );
   }
 }

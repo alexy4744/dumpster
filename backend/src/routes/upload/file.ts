@@ -1,17 +1,23 @@
-import { Response, RequestHandler, NextFunction } from "express";
+import {
+  Response,
+  RequestHandler,
+  NextFunction
+} from "express";
 import multer from "multer";
 
 import Request from "@interfaces/Request";
 import MulterFile from "@interfaces/MulterFile";
 
-import Configuration from "@structures/Configuration";
 import GridFSStorageEngine from "@structures/GridFSStorageEngine";
+
+// tslint:disable-next-line: no-var-requires
+const Configuration = require("@/../../config.json");
 
 const fileUpload: RequestHandler = multer({
   storage: new GridFSStorageEngine(),
   limits: {
-    files: Configuration.MAX_FILES,
-    fileSize: Configuration.MAX_FILE_SIZE
+    files: Configuration.MAX_FILE_FIELDS,
+    fileSize: Configuration.MAX_FILE_SIZE * 1024 * 1024
   }
 }).single("file"); // tslint:disable-line newline-per-chained-call
 

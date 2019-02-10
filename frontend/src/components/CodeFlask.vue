@@ -15,8 +15,9 @@
       @keydown.enter="addLineNumber"
       @keydown.delete="deleteLineNumber"
       @keydown.tab="insertTab"
-      @paste="recalculateLineNumbers"
+      @keydown.ctrl.83="emitSave"
       @keydown.ctrl.90="recalculateLineNumbers"
+      @paste="recalculateLineNumbers"
     />
 
     <ul ref="lineNumbers" class="codeflask__line-numbers"/>
@@ -25,7 +26,7 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { mapState, Module } from "vuex";
+import { mapState } from "vuex";
 import { FRIENDLY_LANGUAGES } from "@/assets/languages";
 import prism from "prismjs";
 
@@ -52,7 +53,7 @@ export default class CodeFlask extends Vue {
   private TAB_SIZE!: number;
   private styles!: { [key: string]: any };
 
-  private welcomeIsDisplayed: boolean = true;
+  public welcomeIsDisplayed: boolean = true;
 
   public async mounted(): Promise<void> {
     await this.displayWelcome();
@@ -121,6 +122,12 @@ export default class CodeFlask extends Vue {
     this.highlight();
   }
 
+  private emitSave(event: KeyboardEvent): void {
+    event.preventDefault();
+
+    this.$emit("save", event);
+  }
+
   private applyStyles(): void {
     for (const reference in this.styles) {
       for (const styleName in this.styles[reference]) {
@@ -139,7 +146,7 @@ export default class CodeFlask extends Vue {
     let message: string = "";
 
     try {
-      const desiredWelcome: string = await import(`@/assets/welcome/${this.LANGUAGE}`).then(module => module.default);
+      const desiredWelcome: string = await import(`@/assets/welcome/${this.LANGUAGE}`).then((module) => module.default);
       message += desiredWelcome.trim();
     } catch (error) {
       // If example doesn't exist for that language, construct a markdown as placeholder

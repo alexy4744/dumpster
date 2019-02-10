@@ -1,17 +1,17 @@
 import { introduction, paste, upload } from "./BASE";
 
 export default `
-import welcome from "./welcome.js"
+const { introduction, paste, upload } = require("./welcome.js");
 
-console.log(welcome.introduction)
+console.log(introduction);
 
 \`${introduction}\`
 
-console.log(welcome.paste)
+console.log(paste);
 
 \`${paste}\`
 
-console.log(welcome.upload)
+console.log(upload);
 
 \`${upload}\`
 `;

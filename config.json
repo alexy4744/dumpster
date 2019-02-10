@@ -1,0 +1,8 @@
+{
+  "FRONTEND_URL": "localhost:8080",
+  "BACKEND_URL": "localhost",
+
+  "MAX_FILE_FIELDS": 1,
+  "MAX_FILE_SIZE": 25,
+  "MAX_PASTE_SIZE": 1
+}
