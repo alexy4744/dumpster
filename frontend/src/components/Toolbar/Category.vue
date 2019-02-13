@@ -23,7 +23,7 @@ export default class Category extends Vue {
     type: String,
     default: ""
   })
-  private title!: string;
+  private readonly title!: string;
 }
 </script>
 

@@ -13,7 +13,7 @@ export default class CategoryItem extends Vue {
     type: String,
     default: ""
   })
-  private name!: string;
+  private readonly name!: string;
 }
 </script>
 

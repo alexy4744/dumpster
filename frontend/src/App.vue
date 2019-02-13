@@ -21,6 +21,12 @@ export default class App extends Vue {}
   font-style: normal;
 }
 
+@font-face {
+  font-family: "Montserrat";
+  src: url("/Montserrat-Regular.ttf");
+  font-style: normal;
+}
+
 html {
   -ms-text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
@@ -30,5 +36,6 @@ html {
 
 body {
   background-color: color("background");
+  margin: 0;
 }
 </style>

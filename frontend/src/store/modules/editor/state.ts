@@ -10,7 +10,7 @@ const state: State = {
   styles: {
     all: {
       fontSize: "16px",
-      lineHeight: "24px",
+      lineHeight: "24px"
     },
 
     input: {
@@ -22,7 +22,7 @@ const state: State = {
     },
 
     lineNumbers: {
-      width: "40px",
+      width: "40px"
     }
   }
 };
@@ -35,12 +35,15 @@ for (const property in state) {
 
     state[property] = item;
   } else {
-    for (const reference in state[property]) { // input, prism, lineNumbers...
+    for (const reference in state[property]) {
+      // input, prism, lineNumbers...
       if (state[property].hasOwnProperty(reference)) {
-        for (const prop in state[property][reference]) { // fontSize, lineHeight, width...
+        for (const prop in state[property][reference]) {
+          // fontSize, lineHeight, width...
           if (state[property][reference].hasOwnProperty(prop)) {
             const userStyle = localStorage.getItem(`${reference}-${prop}`);
-            if (!userStyle || userStyle === state[property][reference][prop]) continue;
+            if (!userStyle || userStyle === state[property][reference][prop])
+              continue;
 
             state[property][reference][prop] = userStyle;
           }

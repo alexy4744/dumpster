@@ -48,12 +48,12 @@ export default class CodeFlask extends Vue {
     lineNumbers: HTMLUListElement;
   };
 
-  private LANGUAGE!: string;
-  private LINE_NUMBERS!: boolean;
-  private TAB_SIZE!: number;
-  private styles!: { [key: string]: any };
-
   public welcomeIsDisplayed: boolean = true;
+
+  private readonly LANGUAGE!: string;
+  private readonly LINE_NUMBERS!: boolean;
+  private readonly TAB_SIZE!: number;
+  private readonly styles!: { [key: string]: any };
 
   public async mounted(): Promise<void> {
     await this.displayWelcome();
@@ -64,7 +64,8 @@ export default class CodeFlask extends Vue {
   }
 
   private highlight(): void {
-    this.$refs.prism.innerHTML = prism.highlight(this.$refs.input.value, prism.languages[this.LANGUAGE], prism.languages[this.LANGUAGE]);
+    const languageDefinition = prism.languages[this.LANGUAGE];
+    this.$refs.prism.innerHTML = prism.highlight(this.$refs.input.value, languageDefinition, languageDefinition);
   }
 
   private scroll(event: ScrollEvent): void {
@@ -87,7 +88,8 @@ export default class CodeFlask extends Vue {
         // Get the number of lines it should have by splitting every new line and counting it
         const linesLeft: number = this.$refs.input.value.split("\n").length;
 
-        // Keep deleting the last child (the last line number) until it meets the number of lines it should have after deletion
+        /* Keep deleting the last child (the last line number) until it meets the number
+          of lines it should have after deletion */
         while (this.$refs.lineNumbers.children.length > linesLeft) {
           const lastChild = this.$refs.lineNumbers.lastChild;
           if (lastChild) this.$refs.lineNumbers.removeChild(lastChild);
@@ -130,13 +132,17 @@ export default class CodeFlask extends Vue {
 
   private applyStyles(): void {
     for (const reference in this.styles) {
-      for (const styleName in this.styles[reference]) {
-        if (reference === "all") {
-          for (const ref in this.$refs) {
-            this.$refs[ref].style[styleName] = this.styles[reference][styleName]
+      if (this.styles.hasOwnProperty(reference)) {
+        for (const styleName in this.styles[reference]) {
+          if (reference === "all") {
+            for (const ref in this.$refs) {
+              if (this.$refs.hasOwnProperty(ref)) {
+                this.$refs[ref].style[styleName] = this.styles[reference][styleName];
+              }
+            }
+          } else if (this.$refs[reference]) {
+            this.$refs[reference].style[styleName] = this.styles[reference][styleName];
           }
-        } else if (this.$refs[reference]) {
-          this.$refs[reference].style[styleName] = this.styles[reference][styleName];
         }
       }
     }
@@ -146,8 +152,8 @@ export default class CodeFlask extends Vue {
     let message: string = "";
 
     try {
-      const desiredWelcome: string = await import(`@/assets/welcome/${this.LANGUAGE}`).then((module) => module.default);
-      message += desiredWelcome.trim();
+      const desiredWelcome: any = await import(`@/assets/welcome/${this.LANGUAGE}`);
+      message += desiredWelcome.default.trim();
     } catch (error) {
       // If example doesn't exist for that language, construct a markdown as placeholder
       try {

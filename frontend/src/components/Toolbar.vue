@@ -17,8 +17,11 @@ export default class Toolbar extends Vue {
     document.onclick = (event: MouseEvent) => {
       // If the clicked element was the list category then just ignore it.
       if (this.currentlyOpenedListCategory && event.target === this.currentlyOpenedListCategory) return;
+
       // Else, if theres an opened list, and the clicked element isn't within the list, close the list.
-      if (this.currentlyOpenedList && event.target !== this.currentlyOpenedList) this.closeList(this.currentlyOpenedList);
+      if (this.currentlyOpenedList && event.target !== this.currentlyOpenedList) {
+        this.closeList(this.currentlyOpenedList);
+      }
     };
   }
 

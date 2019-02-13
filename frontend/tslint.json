@@ -1,26 +1,93 @@
 {
   "defaultSeverity": "warning",
   "extends": [
-    "tslint:recommended"
+    "tslint:latest"
   ],
   "linterOptions": {
     "exclude": [
       "node_modules/**",
-      "*.json"
+      "*.json",
+      "../*.json"
     ]
   },
   "rules": {
-    "quotemark": [true, "double"],
-    "indent": [true, "spaces", 2],
-    "interface-name": false,
-    "ordered-imports": false,
-    "object-literal-sort-keys": false,
-    "no-consecutive-blank-lines": false,
-    "trailing-comma": false,
-    "semicolon": true,
-    "eofline": false,
+    "arrow-parens": true,
+    "arrow-return-shorthand": true,
+    "await-promise": true,
+    "binary-expression-operand-order": true,
+    "class-name": true,
+    "comment-format": true,
     "curly": false,
-    "max-line-length": false,
-    "no-console": false
+    "deprecation": true,
+    "eofline": false,
+    "file-name-casing": true,
+    "import-spacing": true,
+    "indent": [
+      true,
+      "spaces",
+      2
+    ],
+    "interface-name": false,
+    "max-classes-per-file": true,
+    "member-access": true,
+    "member-ordering": [
+      true,
+      {
+        "order": [
+          "public-static-field",
+          "protected-static-field",
+          "private-static-field",
+          "public-instance-field",
+          "protected-instance-field",
+          "private-instance-field",
+          "public-constructor",
+          "protected-constructor",
+          "private-constructor",
+          "public-static-method",
+          "protected-static-method",
+          "private-static-method",
+          "public-instance-method",
+          "protected-instance-method",
+          "private-instance-method"
+        ]
+      }
+    ],
+    "new-parens": true,
+    "newline-before-return": false,
+    "newline-per-chained-call": true,
+    "no-angle-bracket-type-assertion": true,
+    "no-consecutive-blank-lines": false,
+    "no-console": false,
+    "no-duplicate-super": true,
+    "no-duplicate-variable": true,
+    "no-for-in-array": true,
+    "no-implicit-dependencies": false,
+    "no-irregular-whitespace": true,
+    "no-return-await": true,
+    "no-shadowed-variable": true,
+    "no-string-throw": true,
+    "no-submodule-imports": false,
+    "no-trailing-whitespace": true,
+    "no-unused-variable": false,
+    "no-use-before-declare": true,
+    "no-var-keyword": true,
+    "object-literal-sort-keys": false,
+    "one-variable-per-declaration": true,
+    "ordered-imports": false,
+    "prefer-const": true,
+    "prefer-for-of": true,
+    "prefer-object-spread": true,
+    "prefer-readonly": true,
+    "prefer-while": true,
+    "quotemark": [
+      true,
+      "double"
+    ],
+    "restrict-plus-operands": true,
+    "semicolon": true,
+    "trailing-comma": false,
+    "triple-equals": true,
+    "use-isnan": true,
+    "whitespace": true
   }
 }
