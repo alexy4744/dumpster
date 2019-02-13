@@ -1,6 +1,6 @@
 {
-  "FRONTEND_URL": "localhost:8080",
-  "BACKEND_URL": "localhost",
+  "FRONTEND_URL": "https://localhost:8080",
+  "BACKEND_URL": "http://localhost",
 
   "MAX_FILE_FIELDS": 1,
   "MAX_FILE_SIZE": 25,
