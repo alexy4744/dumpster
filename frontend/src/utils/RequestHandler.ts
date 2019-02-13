@@ -12,9 +12,7 @@ export default class RequestHandler extends EventEmitter {
   public async upload(data: FormData | PasteData): Promise<Response> {
     if (this.currentRequest) {
       return Promise.reject(
-        new Error(
-          "There is already an ongoing request while attempting to start a new one!`"
-        )
+        new Error("There is already an ongoing request while attempting to start a new one!`")
       );
     }
 
@@ -23,12 +21,15 @@ export default class RequestHandler extends EventEmitter {
     this.currentRequest = superagent
       .post(`${Configuration.BACKEND_URL}/upload/${uploadEndpoint}`)
       .send(data)
-      .on(
-        "progress",
-        (event: ProgressEvent): boolean => this.emit("progress", event)
-      );
+      .on("progress", (event: ProgressEvent): boolean => this.emit("progress", event));
 
-    return Promise.resolve(this.currentRequest);
+    try {
+      const response: Response = await this.currentRequest;
+      this.currentRequest = null;
+      return Promise.resolve(response);
+    } catch (error) {
+      return Promise.reject(error);
+    }
   }
 
   public abortCurrentRequest(): Promise<RequestHandler> {

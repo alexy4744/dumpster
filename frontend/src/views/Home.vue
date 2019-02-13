@@ -13,7 +13,6 @@
 
         <Category title="Edit">
           <Item name="Language"/>
-          <Item name="Theme"/>
         </Category>
 
         <Category title="Help">
@@ -123,7 +122,7 @@ export default class Home extends Vue {
 
   private handleUploadProgress(event: ProgressEvent): void {
     if (!event.percent) return;
-    if (!this.$refs.uploadProgressBar) return;
+    if (!this.$refs.uploadModal || !this.$refs.uploadProgressBar) return;
 
     this.$refs.uploadProgressBar.setProgress(event.percent);
   }
@@ -132,9 +131,14 @@ export default class Home extends Vue {
     const id: string = res.body.file ? res.body.file._id : res.body.paste ? res.body.paste._id : null;
     const filename: string = res.body.file ? res.body.file.filename : "your paste";
 
+    if (!id) {
+      this.displayError(new Error(`Failed to retrieve a unique ID back from the server!`));
+      return;
+    }
+
     this.displayConfirmation(
       "File Uploaded!",
-      `You can use ${window.location.href + id} to share ${filename}!`
+      `You can use ${this.$data.BACKEND_URL + "/resolve/"+ id} to share ${filename}!`
     );
   }
 
@@ -148,11 +152,11 @@ export default class Home extends Vue {
 
     if (!this.validateFiles(files)) return;
 
-    const formData = new FormData();
+    const formData: FormData = new FormData();
 
     formData.append("file", files[0]);
-    /*                ^^
-      Field name must match the one specified in multer */
+    //                ^^
+    // Field name must match the one specified in multer
 
     this.uploadFiles(formData);
   }
@@ -179,12 +183,12 @@ export default class Home extends Vue {
   }
 
   private displayConfirmation(title: string, description: string): void {
-    const confirmationModal = this.modalGenerator.createConfirmation(title, description);
+    const confirmationModal: Modal = this.modalGenerator.createConfirmation(title, description);
     this.$refs.modalContainer.appendChild(confirmationModal.$el);
   }
 
   private displayError(error: Error): void {
-    const errorModal = this.modalGenerator.createError(error);
+    const errorModal: Modal = this.modalGenerator.createError(error);
     this.$refs.modalContainer.appendChild(errorModal.$el);
   }
 }
