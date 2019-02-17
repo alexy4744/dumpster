@@ -28,7 +28,7 @@
 
     <div ref="modalContainer">
       <Modal
-        v-if="requestHandler.currentRequest"
+        v-if="uploadHandler.currentUpload"
         ref="uploadModal"
         class="uploadModal"
         title="Uploading"
@@ -53,7 +53,7 @@ import Progress from "@/components/Progress.vue";
 import ProgressBar from "@/components/Progress/Bar.vue";
 
 import ModalGenerator from "@/utils/ModalGenerator";
-import RequestHandler from "@/utils/RequestHandler";
+import UploadHandler from "@/utils/UploadHandler";
 
 import { VNode } from "vue";
 import { Component, Vue } from "vue-property-decorator";
@@ -79,7 +79,7 @@ export default class Home extends Vue {
     uploadProgressBar: ProgressBar;
   };
 
-  private readonly requestHandler: RequestHandler = new RequestHandler();
+  private readonly uploadHandler: UploadHandler = new UploadHandler();
   private readonly modalGenerator: ModalGenerator = new ModalGenerator(this);
 
   public mounted(): void {
@@ -89,7 +89,7 @@ export default class Home extends Vue {
       this.dropHandler(event);
     };
 
-    this.requestHandler.on("progress", this.handleUploadProgress);
+    this.uploadHandler.on("progress", this.handleUploadProgress);
   }
 
   private uploadPaste(): void {
@@ -101,22 +101,22 @@ export default class Home extends Vue {
       return;
     }
 
-    this.requestHandler
+    this.uploadHandler
       .upload({ paste })
       .then(this.onUploadFinish)
       .catch(this.displayError);
   }
 
   private uploadFiles(formData: FormData): void {
-    this.requestHandler
+    this.uploadHandler
       .upload(formData)
       .then(this.onUploadFinish)
       .catch(this.displayError);
   }
 
   private cancelUpload(): void {
-    this.requestHandler
-      .abortCurrentRequest()
+    this.uploadHandler
+      .abortCurrentUpload()
       .catch(this.displayError);
   }
 
