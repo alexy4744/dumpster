@@ -19,9 +19,9 @@ import { GridFSBucket, Db } from "mongodb";
 import allowCORS from "@middleware/allowCORS";
 
 /* ROUTES */
-import resolve from "@routes/resolve";
 import upload from "@routes/upload";
-import serveWebApp from "@routes/serverWebApp";
+import download from "@routes/download";
+import resolve from "@routes/resolve";
 
 // tslint:disable-next-line: no-var-requires
 const Configuration = require("@/../../config.json");
@@ -55,7 +55,6 @@ export default class App {
     this.app
       .use(helmet())
       .use(allowCORS)
-      .use(express.static(path.join(__dirname, "../../../frontend/dist/")))
       .use(bodyParser.json({ limit: Configuration.MAX_PASTE_SIZE * 1024 * 1024 }))
       .use(session({
         secret: process.env.COOKIE_SECRET,
@@ -78,8 +77,8 @@ export default class App {
   private loadRoutes(): void {
     this.app
       .use("/upload", upload)
-      .use(resolve)
-      .use(serveWebApp); // ALWAYS have to be the last route to prevent it from overriding other routes
+      .use("/download", download)
+      .use(resolve);
   }
 
   private loadErrorHandler(): void {

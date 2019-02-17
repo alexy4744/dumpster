@@ -3,7 +3,7 @@
 
 import { Readable } from "stream";
 
-export default (buffer: Buffer) => {
+export default (buffer: Buffer): Readable => {
   const readableStream: Readable = new Readable(); // Create a new readable stream with no data
 
   readableStream.push(buffer); // Put the buffer into the readable stream

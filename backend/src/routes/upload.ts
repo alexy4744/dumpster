@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import pasteValidator from "@middleware/pasteValidator";
+import pasteValidator from "@/middleware/validatePaste";
 
 import uploadFile from "@routes/upload/file";
 import uploadPaste from "@routes/upload/paste";
