@@ -5,6 +5,7 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc --build .",
+    "start": "node --no-warnings .",
     "dev": "tsc-watch --onSuccess \"node .\""
   },
   "dependencies": {

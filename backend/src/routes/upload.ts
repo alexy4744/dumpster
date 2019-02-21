@@ -8,11 +8,15 @@ import multer, { Instance } from "multer";
 
 import GridFSStorageEngine from "@structures/GridFSStorageEngine";
 
+// tslint:disable-next-line: no-var-requires
+const Configuration = require("@/../../config.json");
+
 const router: Router = Router();
 const upload: Instance = multer({
   storage: new GridFSStorageEngine(),
   limits: {
-    fileSize: 1 * 1024 * 1024
+    files: Configuration.MAX_FIELDS,
+    fileSize: Configuration.MAX_FILE_SIZE * 1024 * 1024
   }
 });
 

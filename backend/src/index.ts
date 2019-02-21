@@ -45,7 +45,15 @@ async function connectToDatabase(): Promise<Db> {
 }
 
 async function createServer(app: Application): Promise<void> {
-  const Certificates: {
+  if (!process.env.HTTP) return console.error("No HTTP port specified in process.env!");
+
+  http
+    .createServer(app)
+    .listen(process.env.HTTP, () => console.log(`[EXPRESS] Started on port ${process.env.HTTP} (HTTP)`));
+
+  if (!process.env.HTTPS) return;
+
+  const certificates: {
     [key: string]: Buffer | null
   } = {
     key: await fs.promises
@@ -57,13 +65,9 @@ async function createServer(app: Application): Promise<void> {
       .catch((): null => null)
   };
 
-  http
-    .createServer(app)
-    .listen(process.env.HTTP, () => console.log(`[EXPRESS] Started on port ${process.env.HTTP} (HTTP)`));
-
-  if (Certificates.key && Certificates.cert) {
+  if (certificates.key && certificates.cert) {
     https
-      .createServer(Certificates, app)
+      .createServer(certificates, app)
       .listen(process.env.HTTPS, () => console.log(`[EXPRESS] Started on port ${process.env.HTTPS} (HTTPS)`));
   }
 }

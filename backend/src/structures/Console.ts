@@ -1,3 +1,5 @@
+/* Drop in replacement for console, might add logging */
+
 import ConsoleOptions from "@interfaces/ConsoleOptions";
 
 import { Console } from "console";
@@ -6,8 +8,8 @@ import chalk from "chalk";
 export default class extends Console {
   public constructor(options?: ConsoleOptions) {
     super({
-      stdout: options ? options.stdout || process.stdout : process.stdout,
-      stderr: options ? options.stderr || process.stderr : process.stderr
+      stdout: options && options.stdout ? options.stdout : process.stdout,
+      stderr: options && options.stderr ? options.stderr : process.stderr
     });
   }
 
@@ -22,6 +24,6 @@ export default class extends Console {
   }
 
   public error(error: Error | string): void {
-    super.error(chalk.red(`${this.prettyTimeStamp} ${error instanceof Error ? error.message : error}`));
+    super.error(chalk.red(`${this.prettyTimeStamp} ${error}`));
   }
 }

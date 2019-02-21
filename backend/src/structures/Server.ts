@@ -14,6 +14,10 @@ import download from "@routes/download";
 import resolve from "@routes/resolve";
 import upload from "@routes/upload";
 
+import Console from "@structures/Console";
+
+const console: Console = new Console();
+
 class Server {
   private readonly app: Application = express();
   private readonly bucket: GridFSBucket;
@@ -44,7 +48,6 @@ class Server {
       .use(helmet())
       .use((req: Request, res: Response, next: NextFunction): void => {
         (req as IRequest).bucket = this.bucket;
-
         next();
       });
 
