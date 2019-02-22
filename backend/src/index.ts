@@ -11,16 +11,20 @@ import http from "http";
 import https from "https";
 
 import { Application } from "express";
-import { MongoClient, Db } from "mongodb";
+import { MongoClient } from "mongodb";
 
 import Server from "@structures/Server";
 import Console from "@structures/Console";
 
+import checkConfiguration from "@utils/checkConfiguration";
+
+if (!checkConfiguration()) process.exit(1);
+
 const console: Console = new Console();
 
 connectToDatabase()
-  .then((database: Db): void => {
-    const app: Application = new Server(database)
+  .then((databaseConnection: MongoClient): void => {
+    const app: Application = new Server(databaseConnection)
       .initialize()
       .express();
 
@@ -28,25 +32,21 @@ connectToDatabase()
   })
   .catch(console.error);
 
-async function connectToDatabase(): Promise<Db> {
+async function connectToDatabase(): Promise<MongoClient> {
   const MONGODB_ADDRESS: string = process.env.MONGODB_ADDRESS || "mongodb://localhost:27017";
-  const MONGODB_DB_NAME: string = process.env.MONGODB_DB_NAME || "dumpster";
 
   try {
     const mongo: MongoClient = await MongoClient.connect(MONGODB_ADDRESS, { useNewUrlParser: true });
-    const database: Db = mongo.db(MONGODB_DB_NAME);
 
     console.log(`[MONGODB] Connected to ${MONGODB_ADDRESS}!`);
 
-    return Promise.resolve(database);
+    return Promise.resolve(mongo);
   } catch (error) {
     return Promise.reject(error);
   }
 }
 
 async function createServer(app: Application): Promise<void> {
-  if (!process.env.HTTP) return console.error("No HTTP port specified in process.env!");
-
   http
     .createServer(app)
     .listen(process.env.HTTP, () => console.log(`[EXPRESS] Started on port ${process.env.HTTP} (HTTP)`));

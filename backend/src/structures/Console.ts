@@ -23,6 +23,10 @@ export default class extends Console {
     super.log(chalk.blue(this.prettyTimeStamp), ...args);
   }
 
+  public warn(...args: any): void {
+    super.warn(chalk.yellow(this.prettyTimeStamp, ...args));
+  }
+
   public error(error: Error | string): void {
     super.error(chalk.red(`${this.prettyTimeStamp} ${error}`));
   }

@@ -15,7 +15,8 @@
     "helmet": "^3.15.1",
     "module-alias": "^2.2.0",
     "mongodb": "^3.1.13",
-    "multer": "^1.4.1"
+    "multer": "^1.4.1",
+    "rate-limiter-flexible": "^0.22.6"
   },
   "devDependencies": {
     "@types/chalk": "^2.2.0",

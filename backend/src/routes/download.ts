@@ -1,5 +1,4 @@
 import {
-  Router,
   Request,
   Response,
   NextFunction
@@ -10,9 +9,7 @@ import File from "@interfaces/File";
 
 import findFile from "@utils/findFile";
 
-const router: Router = Router();
-
-router.get("/download/:id", (req: Request, res: Response, next: NextFunction): void => {
+export default (req: Request, res: Response, next: NextFunction): void => {
   const id: string = req.params.id;
   if (!id) return next(new Error("No files were included!"));
 
@@ -30,6 +27,4 @@ router.get("/download/:id", (req: Request, res: Response, next: NextFunction): v
         .on("error", next);
     })
     .catch(next);
-});
-
-export default router;
+};

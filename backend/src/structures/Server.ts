@@ -4,9 +4,10 @@ import express, {
   Response,
   NextFunction
 } from "express";
-import { Db, GridFSBucket } from "mongodb";
+import { Db, GridFSBucket, MongoClient } from "mongodb";
 
 import helmet from "helmet";
+import rateLimiter from "@middleware/rateLimiter";
 
 import IRequest from "@interfaces/IRequest";
 
@@ -21,12 +22,14 @@ const console: Console = new Console();
 class Server {
   private readonly app: Application = express();
   private readonly bucket: GridFSBucket;
-  private readonly database: Db;
+  private readonly dumpsterDatabase: Db;
+  private readonly mongoConnection: MongoClient;
   private readonly isProduction: boolean = process.env.NODE_ENV === "production" ? true : false;
 
-  public constructor(database: Db) {
-    this.database = database;
-    this.bucket = new GridFSBucket(this.database, {
+  public constructor(connection: MongoClient) {
+    this.mongoConnection = connection;
+    this.dumpsterDatabase = this.mongoConnection.db(process.env.MONGODB_DB_NAME || "dumpster");
+    this.bucket = new GridFSBucket(this.dumpsterDatabase, {
       bucketName: process.env.MONGODB_BUCKET_NAME || "dumpster"
     });
   }
@@ -47,6 +50,7 @@ class Server {
     this.app
       .use(helmet())
       .use((req: Request, res: Response, next: NextFunction): void => {
+        // Appends bucket to the request object so that the bucket can be accessed by req.bucket in routes
         (req as IRequest).bucket = this.bucket;
         next();
       });
@@ -55,10 +59,33 @@ class Server {
   }
 
   public loadRoutes(): Application {
-    this.app
-      .use(download)
-      .use(upload)
-      .use(resolve);
+    this.app.get("/download/:id", rateLimiter({
+      storeClient: this.mongoConnection,
+      keyPrefix: "download",
+      tableName: "download",
+      points: Number(process.env.RATELIMIT_DOWNLOAD_POINTS),
+      duration: Number(process.env.RATELIMIT_DOWNLOAD_DURATION) * 60
+    }), download);
+
+    this.app.post("/upload", rateLimiter({
+      storeClient: this.mongoConnection,
+      keyPrefix: "upload",
+      tableName: "upload",
+      points: Number(process.env.RATELIMIT_UPLOAD_POINTS),
+      duration: Number(process.env.RATELIMIT_UPLOAD_DURATION) * 60
+    }), upload);
+
+    /* Ratelimiter for basic request like /resolve */
+    this.app.use(rateLimiter({
+      storeClient: this.mongoConnection,
+      keyPrefix: "basic",
+      tableName: "basic",
+      points: Number(process.env.RATELIMIT_BASIC_POINTS),
+      duration: Number(process.env.RATELIMIT_BASIC_DURATION) * 60
+    }));
+
+    /* Any route below here will be rate limited by the basic ratelimiter */
+    this.app.get("/resolve/:id", resolve);
 
     return this.app;
   }

@@ -857,6 +857,11 @@ range-parser@~1.2.0:
   resolved "https://registry.yarnpkg.com/range-parser/-/range-parser-1.2.0.tgz#f49be6b487894ddc40dcc94a322f611092e00d5e"
   integrity sha1-9JvmtIeJTdxA3MlKMi9hEJLgDV4=
 
+rate-limiter-flexible@^0.22.6:
+  version "0.22.6"
+  resolved "https://registry.yarnpkg.com/rate-limiter-flexible/-/rate-limiter-flexible-0.22.6.tgz#5bf629c404e48316c8e945be7946c0083c18067b"
+  integrity sha512-1stKm1Gvy6v6tDy7TapLX5U8CX23ZixKeP2/cPpbEPEiWa9cDWDCQ/vG65lQIY3MMRqh8xoEdDtu7Q0eN7/27g==
+
 raw-body@2.3.3:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/raw-body/-/raw-body-2.3.3.tgz#1b324ece6b5706e153855bc1148c65bb7f6ea0c3"

@@ -15,6 +15,7 @@
     "deprecation": true,
     "eofline": false,
     "file-name-casing": true,
+    "forin": true,
     "import-spacing": true,
     "indent": [
       true,

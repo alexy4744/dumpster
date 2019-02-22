@@ -1,5 +1,4 @@
 import {
-  Router,
   Request,
   Response,
   NextFunction
@@ -10,9 +9,7 @@ import IRequest from "@interfaces/IRequest";
 
 import findFile from "@utils/findFile";
 
-const router: Router = Router();
-
-router.get("/resolve/:id", async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+export default async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   if (!req.params.id) return next(new Error("No file id provided!"));
 
   findFile(req as IRequest)
@@ -23,6 +20,4 @@ router.get("/resolve/:id", async (req: Request, res: Response, next: NextFunctio
         }
       });
     }).catch(next);
-});
-
-export default router;
+};
