@@ -7,7 +7,8 @@ import {
 
 import {
   RateLimiterMongo,
-  IRateLimiterStoreOptions
+  IRateLimiterStoreOptions,
+  RateLimiterRes
 } from "rate-limiter-flexible";
 
 export default (options: IRateLimiterStoreOptions): RequestHandler => {
@@ -24,8 +25,24 @@ export default (options: IRateLimiterStoreOptions): RequestHandler => {
 
     rateLimiter
       .consume(req.connection.remoteAddress)
-      .then(() => next())
-      .catch(() => {
+      .then((rateLimiterRes: RateLimiterRes): void => {
+        res.set({
+          "Retry-After": rateLimiterRes.msBeforeNext / 1000,
+          "X-RateLimit-Limit": options.points,
+          "X-RateLimit-Remaining": rateLimiterRes.remainingPoints,
+          "X-RateLimit-Reset": new Date(Date.now() + rateLimiterRes.msBeforeNext)
+        });
+
+        next();
+      })
+      .catch((rateLimiterRes: RateLimiterRes): void => {
+        res.set({
+          "Retry-After": rateLimiterRes.msBeforeNext / 1000,
+          "X-RateLimit-Limit": options.points,
+          "X-RateLimit-Remaining": rateLimiterRes.remainingPoints,
+          "X-RateLimit-Reset": new Date(Date.now() + rateLimiterRes.msBeforeNext)
+        });
+
         res.status(429).send("Too Many Requests");
       });
   };
