@@ -18,7 +18,7 @@ export default (req: Request, res: Response, next: NextFunction): void => {
       res.set({
         "Content-Type": file.contentType,
         "Content-Length": file.length,
-        "Content-Disposition": `attachment; filename=${file.filename}`
+        "Content-Disposition": `attachment; filename=${file.filename};`
       });
 
       (req as IRequest).bucket

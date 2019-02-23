@@ -4,9 +4,16 @@ import express, {
   Response,
   NextFunction
 } from "express";
-import { Db, GridFSBucket, MongoClient } from "mongodb";
+
+import {
+  Db,
+  GridFSBucket,
+  MongoClient
+} from "mongodb";
 
 import helmet from "helmet";
+
+import enableCORS from "@middleware/enableCORS";
 import rateLimiter from "@middleware/rateLimiter";
 
 import IRequest from "@interfaces/IRequest";
@@ -49,6 +56,7 @@ class Server {
   public loadMiddleware(): Application {
     this.app
       .use(helmet())
+      .use(enableCORS)
       .use((req: Request, res: Response, next: NextFunction): void => {
         // Appends bucket to the request object so that the bucket can be accessed by req.bucket in routes
         (req as IRequest).bucket = this.bucket;
