@@ -22,6 +22,7 @@
     "@types/clipboard": "^2.0.1",
     "@types/prismjs": "^1.9.0",
     "@types/superagent": "^3.8.6",
+    "@types/webpack-env": "^1.13.7",
     "@vue/cli-plugin-babel": "^3.2.2",
     "@vue/cli-plugin-pwa": "^3.2.2",
     "@vue/cli-plugin-typescript": "^3.2.2",

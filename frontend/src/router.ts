@@ -1,7 +1,6 @@
 import Vue from "vue";
 import Router from "vue-router";
 import Home from "@/views/Home.vue";
-import Resolve from "@/views/Resolve.vue";
 
 Vue.use(Router);
 
@@ -16,8 +15,8 @@ export default new Router({
     },
     {
       path: "/:id",
-      name: "resolve",
-      component: Resolve
+      name: "resolved",
+      component: Home
     }
   ],
 });

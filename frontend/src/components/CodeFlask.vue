@@ -63,14 +63,33 @@ export default class CodeFlask extends Vue {
     this.highlight();
   }
 
-  private highlight(): void {
+  public highlight(): void {
     const languageDefinition = prism.languages[this.LANGUAGE];
-    this.$refs.prism.innerHTML = prism.highlight(this.$refs.input.value, languageDefinition, languageDefinition);
+    this.$refs.prism.innerHTML = prism.highlight(
+      this.$refs.input.value,
+      languageDefinition,
+      languageDefinition
+    );
+  }
+
+  public insertText(text: string): void {
+    const start: number = this.$refs.input.selectionStart;
+    const end: number = this.$refs.input.selectionEnd;
+
+    this.$refs.input.value =
+      this.$refs.input.value.slice(0, start) +
+      text +
+      this.$refs.input.value.slice(end);
+    this.$refs.input.selectionEnd = start + text.length;
   }
 
   private scroll(event: ScrollEvent): void {
-    this.$refs.lineNumbers.style.transform = `translateY(-${event.target.scrollTop}px)`;
-    this.$refs.prism.style.transform = `translate(-${event.target.scrollLeft}px, -${event.target.scrollTop}px)`;
+    this.$refs.lineNumbers.style.transform = `translateY(-${
+      event.target.scrollTop
+    }px)`;
+    this.$refs.prism.style.transform = `translate(-${
+      event.target.scrollLeft
+    }px, -${event.target.scrollTop}px)`;
   }
 
   private addLineNumber(): void {
@@ -91,7 +110,7 @@ export default class CodeFlask extends Vue {
         /* Keep deleting the last child (the last line number) until it meets the number
           of lines it should have after deletion */
         while (this.$refs.lineNumbers.children.length > linesLeft) {
-          const lastChild = this.$refs.lineNumbers.lastChild;
+          const lastChild: Node | null = this.$refs.lineNumbers.lastChild;
           if (lastChild) this.$refs.lineNumbers.removeChild(lastChild);
         }
       }
@@ -104,17 +123,10 @@ export default class CodeFlask extends Vue {
         const currentLines: number = this.$refs.lineNumbers.childElementCount; // Get the current number of lines
         const totalLines: number = this.$refs.input.value.split("\n").length;
 
-        for (let i: number = currentLines + 1; i < totalLines + 1; i++) this.addLineNumber();
+        for (let i: number = currentLines + 1; i < totalLines + 1; i++)
+          this.addLineNumber();
       }
     );
-  }
-
-  private insertText(text: string): void {
-    const start: number = this.$refs.input.selectionStart;
-    const end: number = this.$refs.input.selectionEnd;
-
-    this.$refs.input.value = this.$refs.input.value.slice(0, start) + text + this.$refs.input.value.slice(end);
-    this.$refs.input.selectionEnd = start + text.length;
   }
 
   private insertTab(event: KeyboardEvent): void {
@@ -137,28 +149,37 @@ export default class CodeFlask extends Vue {
           if (reference === "all") {
             for (const ref in this.$refs) {
               if (this.$refs.hasOwnProperty(ref)) {
-                this.$refs[ref].style[styleName] = this.styles[reference][styleName];
+                this.$refs[ref].style[styleName] = this.styles[reference][
+                  styleName
+                ];
               }
             }
           } else if (this.$refs[reference]) {
-            this.$refs[reference].style[styleName] = this.styles[reference][styleName];
+            this.$refs[reference].style[styleName] = this.styles[reference][
+              styleName
+            ];
           }
         }
       }
     }
   }
 
-  private async displayWelcome(): Promise<void> {
+  public async displayWelcome(): Promise<void> {
     let message: string = "";
 
     try {
-      const desiredWelcome: any = await import(`@/assets/welcome/${this.LANGUAGE}`);
+      const desiredWelcome: any = await import(`@/assets/welcome/${
+        this.LANGUAGE
+      }`);
       message += desiredWelcome.default.trim();
     } catch (error) {
       // If example doesn't exist for that language, construct a markdown as placeholder
       try {
         message += await this.createWelcomeFallback();
-        this.$store.dispatch("editor/changeSetting", { key: "LANGUAGE", value: "markdown" });
+        this.$store.dispatch("editor/changeSetting", {
+          key: "LANGUAGE",
+          value: "markdown"
+        });
       } catch (err) {
         console.error(err);
       }
@@ -166,12 +187,14 @@ export default class CodeFlask extends Vue {
 
     message.trim();
     message += "\n\n";
-    message += `\`The current language is set to ${FRIENDLY_LANGUAGES[this.LANGUAGE]}!\``;
+    message += `\`The current language is set to ${
+      FRIENDLY_LANGUAGES[this.LANGUAGE]
+    }!\``;
 
     this.$refs.input.value = message;
   }
 
-  private hideWelcome(): void {
+  public hideWelcome(): void {
     if (!this.welcomeIsDisplayed) return;
 
     this.$refs.input.value = "";
