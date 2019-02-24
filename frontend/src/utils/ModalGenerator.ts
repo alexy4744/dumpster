@@ -1,3 +1,5 @@
+/* Way to programatically generate basic modals as alternative */
+
 import Modal from "@/components/Modal.vue";
 import Vue, { VNode } from "vue";
 
@@ -31,10 +33,7 @@ export default class ModalGenerator {
       for (const name of buttonNames) {
         if (!buttons) continue;
 
-        thisModal.$on(
-          `${name}-clicked`,
-          (event: MouseEvent): void => buttons[name](event, thisModal)
-        );
+        thisModal.$on(`${name}-clicked`, (event: MouseEvent): void => buttons[name](event, thisModal));
       }
     }
 
@@ -43,6 +42,7 @@ export default class ModalGenerator {
 
   public createConfirmation(title: string, description: string): Modal {
     return this.createModal(title, description, {
+      // @ts-ignore
       OK: (event: MouseEvent, modal: Modal): void => modal.close()
     });
   }

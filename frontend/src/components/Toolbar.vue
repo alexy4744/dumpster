@@ -65,9 +65,7 @@ $toolbarHeight: 40px;
   justify-content: flex-start;
   align-items: center;
   font-family: Helvetica, Arial, sans-serif;
-  margin-bottom: 5px;
-  margin-left: 15px;
-  margin-right: 15px;
+  margin: 5px 15px;
 }
 </style>
 

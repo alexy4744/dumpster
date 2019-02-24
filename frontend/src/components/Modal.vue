@@ -1,5 +1,3 @@
-<!-- Clone of https://github.com/euvl/vue-js-modal in style -->
-
 <template>
   <div class="modal--background" v-if="!isClosed">
     <div class="modal">
@@ -74,6 +72,8 @@ export default class Modal extends Vue {
   justify-content: flex-start;
   align-items: center;
   position: absolute;
+  width: 30%;
+  min-width: 256px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -83,6 +83,7 @@ export default class Modal extends Vue {
 }
 
 .modal__wrapper {
+  width: calc(100% - 50px);
   padding: 25px;
 }
 

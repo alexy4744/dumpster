@@ -54,7 +54,7 @@
     ],
     "new-parens": true,
     "newline-before-return": false,
-    "newline-per-chained-call": true,
+    "newline-per-chained-call": false,
     "no-angle-bracket-type-assertion": true,
     "no-consecutive-blank-lines": false,
     "no-console": false,

@@ -3,21 +3,17 @@
     <div class="wrapper">
       <Toolbar>
         <Category title="File">
-          <Item name="New Paste"/>
-          <Item name="New Upload"/>
-
-          <br>
+          <Item name="New Upload" @click="displayModal('Upload')"/>
 
           <Item name="Save" @click="uploadPaste"/>
         </Category>
 
         <Category title="Edit">
-          <Item name="Language"/>
+          <Item name="Language" @click="displayModal('Language')"/>
         </Category>
 
         <Category title="Help">
-          <Item name="Changelog"/>
-          <Item name="About"/>
+          <Item name="About" @click="displayModal('About')"/>
         </Category>
       </Toolbar>
 
@@ -26,20 +22,7 @@
       </div>
     </div>
 
-    <div ref="modalContainer">
-      <Modal
-        v-if="uploadHandler.currentUpload"
-        ref="uploadModal"
-        class="uploadModal"
-        title="Uploading"
-        :buttons="['CANCEL']"
-        @CANCEL-clicked="cancelUpload"
-      >
-        <Progress class="uploadProgress" width="256px" height="24px">
-          <ProgressBar ref="uploadProgressBar" class="uploadProgressBar" progress="0%"/>
-        </Progress>
-      </Modal>
-    </div>
+    <div ref="modalContainer"></div>
   </div>
 </template>
 
@@ -49,15 +32,20 @@ import Category from "@/components/Toolbar/Category.vue";
 import Item from "@/components/Toolbar/Category/Item.vue";
 import CodeFlask from "@/components/CodeFlask.vue";
 import Modal from "@/components/Modal.vue";
-import Progress from "@/components/Progress.vue";
-import ProgressBar from "@/components/Progress/Bar.vue";
+
+import Language from "@/components/Modals/Language.vue";
+import Upload from "@/components/Modals/Upload.vue";
+import UploadProgress from "@/components/Modals/UploadProgress.vue";
+import UploadResult from "@/components/Modals/UploadResult.vue";
 
 import ModalGenerator from "@/utils/ModalGenerator";
 import UploadHandler from "@/utils/UploadHandler";
 
+import File from "@/../../backend/src/interfaces/File";
+
 import { VNode } from "vue";
 import { Component, Vue } from "vue-property-decorator";
-import superagent, { Response, ProgressEvent } from "superagent";
+import superagent, { Response } from "superagent";
 
 @Component({
   components: {
@@ -65,9 +53,7 @@ import superagent, { Response, ProgressEvent } from "superagent";
     Category,
     Item,
     CodeFlask,
-    Modal,
-    Progress,
-    ProgressBar
+    Modal
   }
 })
 export default class Home extends Vue {
@@ -75,8 +61,6 @@ export default class Home extends Vue {
     codeflask: CodeFlask;
     dropZone: HTMLDivElement;
     modalContainer: HTMLDivElement;
-    uploadModal: Modal;
-    uploadProgressBar: ProgressBar;
   };
 
   private readonly uploadHandler: UploadHandler = new UploadHandler();
@@ -94,8 +78,6 @@ export default class Home extends Vue {
       event.preventDefault();
       this.dropHandler(event);
     };
-
-    this.uploadHandler.on("progress", this.handleUploadProgress);
   }
 
   private uploadPaste(): void {
@@ -116,9 +98,20 @@ export default class Home extends Vue {
   }
 
   private uploadFiles(formData: FormData): void {
+    const uploadProgress: UploadProgress = new UploadProgress({ parent: this });
+
+    uploadProgress.$mount();
+    uploadProgress.$on("cancel", this.cancelUpload);
+
+    this.$refs.modalContainer.appendChild(uploadProgress.$el);
+
     this.uploadHandler
+      .on("progress", uploadProgress.updateProgress)
       .upload(formData)
-      .then(this.onUploadFinish)
+      .then((res: Response) => {
+        uploadProgress.close();
+        this.onUploadFinish(res);
+      })
       .catch(this.displayError);
   }
 
@@ -126,41 +119,25 @@ export default class Home extends Vue {
     this.uploadHandler.abortCurrentUpload().catch(this.displayError);
   }
 
-  private handleUploadProgress(event: ProgressEvent): void {
-    if (!event.percent) return;
-    if (!this.$refs.uploadModal || !this.$refs.uploadProgressBar) return;
-
-    this.$refs.uploadProgressBar.setProgress(event.percent);
-  }
-
   private onUploadFinish(res: Response): void {
-    // NEED TO BE MADE TO WORK WITH MULTIPLE FILES
-    // const id: string = res.body.data.items[0];
-    // const filename: string = res.body.originalname;
-    // if (!id) {
-    //   this.displayError(
-    //     new Error(`Failed to retrieve a unique ID back from the server!`)
-    //   );
-    //   return;
-    // }
-    // const newUrl: string = this.$data.BACKEND_URL + "/resolve/" + id;
-    // if (history.pushState) window.history.pushState({}, "Dumpster", newUrl);
-    // else window.location.href = newUrl;
-    // this.displayConfirmation(
-    //   "File Uploaded!",
-    //   `You can use ${newUrl} to share ${filename}!`
-    // );
+    const uploadedFiles: File[] = res.body.data.items;
+    const uploadResult: UploadResult = new UploadResult({
+      parent: this,
+      propsData: {
+        files: uploadedFiles
+      }
+    });
+
+    uploadResult.$mount();
+
+    this.$refs.modalContainer.appendChild(uploadResult.$el);
   }
 
   private dropHandler(event: DragEvent): void {
-    const files: FileList | null = event.dataTransfer
-      ? event.dataTransfer.files
-      : null;
+    const files: FileList | null = event.dataTransfer ? event.dataTransfer.files : null;
 
     if (!files) {
-      this.displayError(
-        new Error(`No files were found during the drag and drop!`)
-      );
+      this.displayError(new Error(`No files were found during the drag and drop!`));
       return;
     }
 
@@ -168,6 +145,7 @@ export default class Home extends Vue {
 
     const formData: FormData = new FormData();
 
+    // tslint:disable-next-line:prefer-for-of
     for (let i: number = 0; i < files.length; i++) {
       formData.append("", files[i]);
     }
@@ -177,13 +155,11 @@ export default class Home extends Vue {
 
   private validateFiles(files: FileList): boolean {
     if (files.length > this.$data.MAX_FIELDS) {
-      this.displayError(
-        new Error(`You cannot upload more than ${this.$data.MAX_FIELDS} files!`)
-      );
-
+      this.displayError(new Error(`You cannot upload more than ${this.$data.MAX_FIELDS} files!`));
       return false;
     }
 
+    // tslint:disable-next-line:prefer-for-of
     for (let i: number = 0; i < files.length; i++) {
       // tslint:disable-next-line:max-line-length
       // https://stackoverflow.com/questions/25016442/how-to-distinguish-if-a-file-or-folder-is-being-dragged-prior-to-it-being-droppe
@@ -202,7 +178,7 @@ export default class Home extends Vue {
   }
 
   private displayFile(id: string): void {
-    const url: string = this.$data.BACKEND_URL + "/download/" + id;
+    const url: string = `${this.$data.BACKEND_URL}/download/${id}`;
 
     superagent
       .get(url)
@@ -213,22 +189,36 @@ export default class Home extends Vue {
               (): void => {
                 this.$refs.codeflask.hideWelcome();
                 this.$refs.codeflask.insertText(res.text);
+                this.$refs.codeflask.recalculateLineNumbers();
                 this.$refs.codeflask.highlight();
               }
             );
           } else {
-            // display download modal
+            window.location.href = url;
           }
         }
       )
       .catch(this.displayError);
   }
 
+  private async displayModal(modalName: string): Promise<void> {
+    try {
+      // tslint:disable-next-line:arrow-parens
+      const ThatModal = await import(`@/components/Modals/${modalName}`).then(module => module.default);
+      if (!ThatModal) return;
+
+      const modal: Modal = new ThatModal({ parent: this });
+
+      modal.$mount();
+
+      this.$refs.modalContainer.appendChild(modal.$el);
+    } catch (error) {
+      this.displayError(error);
+    }
+  }
+
   private displayConfirmation(title: string, description: string): void {
-    const confirmationModal: Modal = this.modalGenerator.createConfirmation(
-      title,
-      description
-    );
+    const confirmationModal: Modal = this.modalGenerator.createConfirmation(title, description);
     this.$refs.modalContainer.appendChild(confirmationModal.$el);
   }
 
@@ -244,13 +234,5 @@ export default class Home extends Vue {
 
 .wrapper {
   position: absolute;
-}
-
-.uploadProgress {
-  background-color: color("background");
-}
-
-.uploadProgressBar {
-  background-color: color("blue");
 }
 </style>
