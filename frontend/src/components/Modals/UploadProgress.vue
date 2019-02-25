@@ -6,7 +6,7 @@
     :buttons="['Cancel']"
     @Cancel-clicked="cancel"
   >
-    <Progress class="upload-progress" width="256px" height="24px">
+    <Progress class="upload-progress" height="24px">
       <ProgressBar ref="uploadProgressBar" class="upload-progress-bar" progress="0%"/>
     </Progress>
   </Modal>

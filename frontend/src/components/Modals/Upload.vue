@@ -91,6 +91,7 @@ export default class Upload extends Vue {
 
           uploadProgress.close();
 
+          this.$refs.uploadModal.close();
           this.$refs.modalContainer.displayModal(
             new UploadResult({
               parent: this.$refs.modalContainer,

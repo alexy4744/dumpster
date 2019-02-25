@@ -25,7 +25,12 @@ export default class UploadHandler extends EventEmitter {
               resolve(res);
             }
           )
-          .catch(reject);
+          .catch(
+            (error: Error): void => {
+              this.currentUpload = null;
+              reject(error);
+            }
+          );
       }
     );
   }
