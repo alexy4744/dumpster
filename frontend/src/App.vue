@@ -36,6 +36,5 @@ html {
 
 body {
   background-color: color("background");
-  margin: 0;
 }
 </style>

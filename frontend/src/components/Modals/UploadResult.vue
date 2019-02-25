@@ -28,7 +28,7 @@ import File from "@/../../backend/src/interfaces/File";
   }
 })
 export default class UploadResult extends Vue {
-  public $refs!: {
+  public readonly $refs!: {
     uploadResult: Modal;
   };
 

@@ -1,41 +1,53 @@
 <template>
-  <Modal
-    ref="uploadModal"
-    title="Upload"
-    :buttons="['Upload', 'Cancel']"
-    @Upload-clicked="upload"
-    @Cancel-clicked="cancel"
-  >
-    <input ref="filePicker" class="file-picker" type="file" multiple @change="readFiles">
+  <div>
+    <Modal
+      ref="uploadModal"
+      title="Upload"
+      :buttons="['Upload', 'Cancel']"
+      @Upload-clicked="upload"
+      @Cancel-clicked="cancel"
+    >
+      <input ref="filePicker" class="file-picker" type="file" multiple @change="readFiles">
 
-    <div ref="selectedFiles" class="files">
-      <template v-for="file of selectedFiles">
-        <div :key="file.name" class="file">
-          <span class="file__name">{{ file.name }}</span>
-          <span class="file__size">{{ file.size }} bytes</span>
-        </div>
-      </template>
-    </div>
-  </Modal>
+      <div ref="selectedFiles" class="files">
+        <template v-for="file of selectedFiles">
+          <div :key="file.name" class="file">
+            <span class="file__name">{{ file.name }}</span>
+            <span class="file__size">{{ file.size }} bytes</span>
+          </div>
+        </template>
+      </div>
+    </Modal>
+
+    <ModalContainer ref="modalContainer"/>
+  </div>
 </template>
 
 <script lang="ts">
 import { VNode } from "vue";
 import { Component, Prop, Vue } from "vue-property-decorator";
+import { Response } from "superagent";
 
 import Modal from "@/components/Modal.vue";
+import ModalContainer from "@/components/ModalContainer.vue";
+
+import UploadProgress from "@/components/Modals/UploadProgress.vue";
+import UploadResult from "@/components/Modals/UploadResult.vue";
+
 import UploadHandler from "@/utils/UploadHandler";
 
 @Component({
   components: {
-    Modal
+    Modal,
+    ModalContainer
   }
 })
 export default class Upload extends Vue {
-  public $refs!: {
+  public readonly $refs!: {
     uploadModal: Modal;
     filePicker: HTMLInputElement;
     selectedFiles: HTMLDivElement;
+    modalContainer: ModalContainer;
   };
 
   private readonly uploadHandler: UploadHandler = new UploadHandler();
@@ -58,9 +70,43 @@ export default class Upload extends Vue {
       formData.append("", this.selectedFiles[i]);
     }
 
-    this.uploadHandler.upload(formData);
-    // .then(this.onUploadFinish)
-    // .catch(this.displayError);
+    this.displayModals(formData);
+  }
+
+  private displayModals(formData: FormData): void {
+    const uploadProgress: UploadProgress = new UploadProgress({ parent: this.$refs.modalContainer });
+
+    uploadProgress.$on("cancel", () => {
+      this.uploadHandler.abortCurrentUpload().catch(this.$refs.modalContainer.displayError);
+    });
+
+    this.$refs.modalContainer.displayModal(uploadProgress);
+
+    this.uploadHandler
+      .on("progress", uploadProgress.updateProgress)
+      .upload(formData)
+      .then(
+        (res: Response): void => {
+          if (!res.body.data) return;
+
+          uploadProgress.close();
+
+          this.$refs.modalContainer.displayModal(
+            new UploadResult({
+              parent: this.$refs.modalContainer,
+              propsData: {
+                files: res.body.data.items
+              }
+            })
+          );
+        }
+      )
+      .catch(
+        (error: Error): void => {
+          uploadProgress.close();
+          this.$refs.modalContainer.displayError(error);
+        }
+      );
   }
 
   private cancel(): void {

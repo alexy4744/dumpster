@@ -1,19 +1,19 @@
 <template>
   <div>
-    <div class="wrapper">
+    <div style="position: absolute;">
       <Toolbar>
         <Category title="File">
-          <Item name="New Upload" @click="displayModal('Upload')"/>
+          <Item name="New Upload" @click="$refs.modalContainer.displayModal('Upload')"/>
 
           <Item name="Save" @click="uploadPaste"/>
         </Category>
 
         <Category title="Edit">
-          <Item name="Language" @click="displayModal('Language')"/>
+          <Item name="Language" @click="$refs.modalContainer.displayModal('Language')"/>
         </Category>
 
         <Category title="Help">
-          <Item name="About" @click="displayModal('About')"/>
+          <Item name="About" @click="$refs.modalContainer.displayModal('About')"/>
         </Category>
       </Toolbar>
 
@@ -22,7 +22,7 @@
       </div>
     </div>
 
-    <div ref="modalContainer"></div>
+    <ModalContainer ref="modalContainer"/>
   </div>
 </template>
 
@@ -31,6 +31,7 @@ import Toolbar from "@/components/Toolbar.vue";
 import Category from "@/components/Toolbar/Category.vue";
 import Item from "@/components/Toolbar/Category/Item.vue";
 import CodeFlask from "@/components/CodeFlask.vue";
+import ModalContainer from "@/components/ModalContainer.vue";
 import Modal from "@/components/Modal.vue";
 
 import Language from "@/components/Modals/Language.vue";
@@ -38,7 +39,6 @@ import Upload from "@/components/Modals/Upload.vue";
 import UploadProgress from "@/components/Modals/UploadProgress.vue";
 import UploadResult from "@/components/Modals/UploadResult.vue";
 
-import ModalGenerator from "@/utils/ModalGenerator";
 import UploadHandler from "@/utils/UploadHandler";
 
 import File from "@/../../backend/src/interfaces/File";
@@ -53,18 +53,18 @@ import superagent, { Response } from "superagent";
     Category,
     Item,
     CodeFlask,
+    ModalContainer,
     Modal
   }
 })
 export default class Home extends Vue {
-  public $refs!: {
+  public readonly $refs!: {
     codeflask: CodeFlask;
     dropZone: HTMLDivElement;
-    modalContainer: HTMLDivElement;
+    modalContainer: ModalContainer;
   };
 
   private readonly uploadHandler: UploadHandler = new UploadHandler();
-  private readonly modalGenerator: ModalGenerator = new ModalGenerator(this);
 
   public mounted(): void {
     const fileId: string = this.$route.params.id;
@@ -85,7 +85,7 @@ export default class Home extends Vue {
 
     // If no text or the welcome message is still shown, don't upload
     if (!currentText.length || this.$refs.codeflask.welcomeIsDisplayed) {
-      this.displayError(new Error("There is no paste to be uploaded!"));
+      this.$refs.modalContainer.displayError(new Error("There is no paste to be uploaded!"));
       return;
     }
 
@@ -98,46 +98,48 @@ export default class Home extends Vue {
   }
 
   private uploadFiles(formData: FormData): void {
-    const uploadProgress: UploadProgress = new UploadProgress({ parent: this });
+    const uploadProgress: UploadProgress = new UploadProgress({ parent: this.$refs.modalContainer });
 
-    uploadProgress.$mount();
     uploadProgress.$on("cancel", this.cancelUpload);
 
-    this.$refs.modalContainer.appendChild(uploadProgress.$el);
+    this.$refs.modalContainer.displayModal(uploadProgress);
 
     this.uploadHandler
       .on("progress", uploadProgress.updateProgress)
       .upload(formData)
-      .then((res: Response) => {
-        uploadProgress.close();
-        this.onUploadFinish(res);
-      })
-      .catch(this.displayError);
+      .then(
+        (res: Response): void => {
+          if (!res.body.data) return;
+
+          uploadProgress.close();
+
+          this.$refs.modalContainer.displayModal(
+            new UploadResult({
+              parent: this.$refs.modalContainer,
+              propsData: {
+                files: res.body.data.items
+              }
+            })
+          );
+        }
+      )
+      .catch(
+        (error: Error): void => {
+          uploadProgress.close();
+          this.$refs.modalContainer.displayError(error);
+        }
+      );
   }
 
   private cancelUpload(): void {
-    this.uploadHandler.abortCurrentUpload().catch(this.displayError);
-  }
-
-  private onUploadFinish(res: Response): void {
-    const uploadedFiles: File[] = res.body.data.items;
-    const uploadResult: UploadResult = new UploadResult({
-      parent: this,
-      propsData: {
-        files: uploadedFiles
-      }
-    });
-
-    uploadResult.$mount();
-
-    this.$refs.modalContainer.appendChild(uploadResult.$el);
+    this.uploadHandler.abortCurrentUpload().catch(this.$refs.modalContainer.displayError);
   }
 
   private dropHandler(event: DragEvent): void {
     const files: FileList | null = event.dataTransfer ? event.dataTransfer.files : null;
 
     if (!files) {
-      this.displayError(new Error(`No files were found during the drag and drop!`));
+      this.$refs.modalContainer.displayError(new Error(`No files were found during the drag and drop!`));
       return;
     }
 
@@ -155,7 +157,7 @@ export default class Home extends Vue {
 
   private validateFiles(files: FileList): boolean {
     if (files.length > this.$data.MAX_FIELDS) {
-      this.displayError(new Error(`You cannot upload more than ${this.$data.MAX_FIELDS} files!`));
+      this.$refs.modalContainer.displayError(new Error(`You cannot upload more than ${this.$data.MAX_FIELDS} files!`));
       return false;
     }
 
@@ -164,12 +166,12 @@ export default class Home extends Vue {
       // tslint:disable-next-line:max-line-length
       // https://stackoverflow.com/questions/25016442/how-to-distinguish-if-a-file-or-folder-is-being-dragged-prior-to-it-being-droppe
       if (!files[i].type && !(files[i].size % 4096)) {
-        this.displayError(new Error("You can't upload folders!"));
+        this.$refs.modalContainer.displayError(new Error("You can't upload folders!"));
         return false;
       }
 
       if (files[i].size > this.$data.MAX_FILE_SIZE * 1024 * 1024) {
-        this.displayError(new Error(`${files[i].name} is too big!`));
+        this.$refs.modalContainer.displayError(new Error(`${files[i].name} is too big!`));
         return false;
       }
     }
@@ -198,41 +200,7 @@ export default class Home extends Vue {
           }
         }
       )
-      .catch(this.displayError);
-  }
-
-  private async displayModal(modalName: string): Promise<void> {
-    try {
-      // tslint:disable-next-line:arrow-parens
-      const ThatModal = await import(`@/components/Modals/${modalName}`).then(module => module.default);
-      if (!ThatModal) return;
-
-      const modal: Modal = new ThatModal({ parent: this });
-
-      modal.$mount();
-
-      this.$refs.modalContainer.appendChild(modal.$el);
-    } catch (error) {
-      this.displayError(error);
-    }
-  }
-
-  private displayConfirmation(title: string, description: string): void {
-    const confirmationModal: Modal = this.modalGenerator.createConfirmation(title, description);
-    this.$refs.modalContainer.appendChild(confirmationModal.$el);
-  }
-
-  private displayError(error: Error): void {
-    const errorModal: Modal = this.modalGenerator.createError(error);
-    this.$refs.modalContainer.appendChild(errorModal.$el);
+      .catch(this.$refs.modalContainer.displayError);
   }
 }
 </script>
-
-<style lang="scss" scoped>
-@import "@/assets/colors.scss";
-
-.wrapper {
-  position: absolute;
-}
-</style>

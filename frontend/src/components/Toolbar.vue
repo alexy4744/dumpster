@@ -5,7 +5,6 @@
 </template>
 
 <script lang="ts">
-// TO-DO: REFACTOR METHODS
 import { Component, Vue } from "vue-property-decorator";
 
 @Component
@@ -14,7 +13,7 @@ export default class Toolbar extends Vue {
   public currentlyOpenedList: HTMLDivElement | null = null;
 
   public mounted(): void {
-    document.onclick = (event: MouseEvent) => {
+    document.onclick = (event: MouseEvent): void => {
       // If the clicked element was the list category then just ignore it.
       if (this.currentlyOpenedListCategory && event.target === this.currentlyOpenedListCategory) return;
 

@@ -37,7 +37,7 @@ interface ScrollEvent extends MouseEvent {
 
 @Component
 export default class CodeFlask extends Vue {
-  public $refs!: {
+  public readonly $refs!: {
     prism: HTMLPreElement;
     input: HTMLTextAreaElement;
     lineNumbers: HTMLUListElement;

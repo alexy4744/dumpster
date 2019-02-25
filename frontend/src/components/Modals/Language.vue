@@ -40,7 +40,7 @@ import Modal from "@/components/Modal.vue";
   }
 })
 export default class Language extends Vue {
-  public $refs!: {
+  public readonly $refs!: {
     languageModal: Modal;
     languageMenu: HTMLSelectElement;
   };

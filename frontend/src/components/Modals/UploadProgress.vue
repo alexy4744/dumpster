@@ -28,7 +28,7 @@ import ProgressBar from "@/components/Progress/Bar.vue";
   }
 })
 export default class UploadProgress extends Vue {
-  public $refs!: {
+  public readonly $refs!: {
     uploadProgressModal: Modal;
     uploadProgressBar: ProgressBar;
   };

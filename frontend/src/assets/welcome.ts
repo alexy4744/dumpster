@@ -2,8 +2,8 @@ export default `
 # INTRODUCTION
 
 Hello there! This site is pretty much similar to Hastebin but offers both file and paste hosting.
-Files and pastes may last up to 1 month, however it may be deleted earlier due to our FIFO to reserve
-storage for new uploads.
+Files and pastes are not guaranteed to be stored forever and may be deleted at any time in order
+to reserve storage for new uploads.
 
 # HOW TO UPLOAD PASTES
 
