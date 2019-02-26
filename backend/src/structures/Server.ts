@@ -36,9 +36,7 @@ class Server {
   public constructor(connection: MongoClient) {
     this.mongoConnection = connection;
     this.dumpsterDatabase = this.mongoConnection.db(process.env.MONGODB_DB_NAME || "dumpster");
-    this.bucket = new GridFSBucket(this.dumpsterDatabase, {
-      bucketName: process.env.MONGODB_BUCKET_NAME || "dumpster"
-    });
+    this.bucket = new GridFSBucket(this.dumpsterDatabase);
   }
 
   public express(): Application {

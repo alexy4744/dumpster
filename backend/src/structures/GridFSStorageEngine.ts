@@ -4,7 +4,7 @@ import { StorageEngine } from "multer";
 import MulterFile from "@interfaces/MulterFile";
 import IRequest from "@interfaces/IRequest";
 
-import generateId from "@utils/generateID";
+import generateId from "@utils/generateId";
 
 class GridFSStorageEngine implements StorageEngine {
   public async _handleFile(
