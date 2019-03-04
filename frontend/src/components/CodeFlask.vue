@@ -31,9 +31,7 @@ import prism, { LanguageDefinition } from "prismjs";
 import { LANGUAGES, FRIENDLY_LANGUAGES } from "@/assets/languages";
 import welcome from "@/assets/welcome";
 
-interface ScrollEvent extends MouseEvent {
-  target: HTMLUListElement | HTMLPreElement;
-}
+import ScrollEvent from "@/interfaces/ScrollEvent";
 
 @Component
 export default class CodeFlask extends Vue {

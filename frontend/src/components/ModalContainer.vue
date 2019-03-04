@@ -10,6 +10,7 @@
 import { Component, Vue } from "vue-property-decorator";
 
 import Modal from "@/components/Modal.vue";
+
 import ModalGenerator from "@/utils/ModalGenerator";
 
 @Component

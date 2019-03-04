@@ -13,6 +13,7 @@
         </Category>
 
         <Category title="Help">
+          <Item name="ShareX" @click="$refs.modalContainer.displayModal('ShareX')"/>
           <Item name="About" @click="$refs.modalContainer.displayModal('About')"/>
         </Category>
       </Toolbar>
@@ -40,8 +41,6 @@ import UploadProgress from "@/components/Modals/UploadProgress.vue";
 import UploadResult from "@/components/Modals/UploadResult.vue";
 
 import UploadHandler from "@/utils/UploadHandler";
-
-import File from "@/../../backend/src/interfaces/File";
 
 import { VNode } from "vue";
 import { Component, Vue } from "vue-property-decorator";

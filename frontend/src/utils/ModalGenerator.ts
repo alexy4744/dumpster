@@ -1,11 +1,8 @@
 /* Way to programatically generate basic modals as alternative */
 
-import Modal from "@/components/Modal.vue";
 import Vue, { VNode } from "vue";
-
-interface Buttons {
-  [key: string]: (event: MouseEvent, modal: Modal) => void;
-}
+import Modal from "@/components/Modal.vue";
+import ModalGeneratorButtons from "@/interfaces/ModalGeneratorButtons";
 
 export default class ModalGenerator {
   private readonly modalParent: Vue;
@@ -14,7 +11,7 @@ export default class ModalGenerator {
     this.modalParent = parent;
   }
 
-  public createModal(title: string, description: string, buttons?: Buttons): Modal {
+  public createModal(title: string, description: string, buttons?: ModalGeneratorButtons): Modal {
     const buttonNames: string[] = buttons ? Object.keys(buttons) : [];
     const thisModal: Modal = new Modal({
       parent: this.modalParent,

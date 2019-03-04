@@ -138,6 +138,5 @@ export default class Upload extends Vue {
 
 .file__size {
   float: right;
-  // display: inline-block;
 }
 </style>

@@ -19,7 +19,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 import Clipboard from "@/components/Clipboard.vue";
 import Modal from "@/components/Modal.vue";
 
-import File from "@/../../backend/src/interfaces/File";
+import File from "@/interfaces/File";
 
 @Component({
   components: {

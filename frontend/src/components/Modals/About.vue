@@ -1,5 +1,5 @@
 <template>
-  <Modal ref="aboutModal" class="about-modal" title="About" :buttons="['OK']" @OK-clicked="close">
+  <Modal ref="aboutModal" title="About" :buttons="['OK']" @OK-clicked="close">
     <div>
       <a href="https://github.com/alexy4744/Dumpster">GitHub</a>
     </div>
@@ -26,4 +26,3 @@ export default class About extends Vue {
   }
 }
 </script>
-
