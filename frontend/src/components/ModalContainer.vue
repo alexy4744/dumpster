@@ -21,23 +21,32 @@ export default class ModalContainer extends Vue {
 
   public readonly modalGenerator: ModalGenerator = new ModalGenerator(this);
 
-  public async displayModal(modal: Vue | string): Promise<void> {
-    if (typeof modal === "string") {
-      try {
-        // tslint:disable-next-line:arrow-parens
-        const ThatModal = await import(`@/components/Modals/${modal}`).then(module => module.default);
-        if (!ThatModal) return this.displayError(new Error(`${modal} has no default export!`));
+  public displayModal(modal: Vue | string): Promise<Vue> {
+    return new Promise<Vue>(
+      async (resolve, reject): Promise<void> => {
+        if (typeof modal === "string") {
+          try {
+            // tslint:disable-next-line:arrow-parens
+            const ThatModal = await import(`@/components/Modals/${modal}`).then(module => module.default);
+            if (!ThatModal) {
+              this.displayError(new Error(`${modal} has no default export!`));
+              return reject();
+            }
 
-        const theModal: Vue = new ThatModal({ parent: this }).$mount();
+            const theModal: Vue = new ThatModal({ parent: this }).$mount();
 
-        this.$refs.modalContainer.appendChild(theModal.$el);
-      } catch (error) {
-        this.displayError(error);
+            this.$refs.modalContainer.appendChild(theModal.$el);
+
+            return resolve(theModal);
+          } catch (error) {
+            this.displayError(error);
+          }
+        } else {
+          modal.$mount();
+          this.$refs.modalContainer.appendChild(modal.$el);
+        }
       }
-    } else {
-      modal.$mount();
-      this.$refs.modalContainer.appendChild(modal.$el);
-    }
+    );
   }
 
   public displayConfirmation(title: string, description: string): void {

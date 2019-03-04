@@ -9,7 +9,7 @@
         </Category>
 
         <Category title="Edit">
-          <Item name="Language" @click="$refs.modalContainer.displayModal('Language')"/>
+          <Item name="Language" @click="displayLanguageModal"/>
         </Category>
 
         <Category title="Help">
@@ -200,6 +200,31 @@ export default class Home extends Vue {
         }
       )
       .catch(this.$refs.modalContainer.displayError);
+  }
+
+  private displayLanguageModal(): void {
+    this.$refs.modalContainer
+      .displayModal("Language")
+      .then(
+        (modal: Vue): void => {
+          modal.$on(
+            "languageUpdated",
+            async (): Promise<void> => {
+              if (this.$refs.codeflask.welcomeIsDisplayed) {
+                this.$refs.codeflask.hideWelcome();
+                await this.$refs.codeflask.displayWelcome();
+              }
+
+              this.$refs.codeflask.highlight();
+            }
+          );
+        }
+      )
+      .catch(
+        (): void => {
+          /* noop */
+        }
+      );
   }
 }
 </script>

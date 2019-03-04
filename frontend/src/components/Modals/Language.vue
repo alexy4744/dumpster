@@ -49,6 +49,8 @@ export default class Language extends Vue {
 
   private save(): void {
     localStorage.setItem("LANGUAGE", this.$refs.languageMenu.value);
+
+    this.$emit("languageUpdated", this.$refs.languageMenu.value);
     this.$refs.languageModal.close();
   }
 

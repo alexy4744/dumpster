@@ -43,15 +43,18 @@ export default class CodeFlask extends Vue {
 
   public welcomeIsDisplayed: boolean = true;
 
-  private readonly LANGUAGE: string = localStorage.getItem("LANGUAGE") || "markdown";
   private readonly TAB_SIZE: number = Number(localStorage.getItem("TAB_SIZE")) || 2;
+
+  public language(): string {
+    return localStorage.getItem("LANGUAGE") || "markdown";
+  }
 
   public mounted(): void {
     this.displayWelcome();
   }
 
   public highlight(language?: string): void {
-    const languageDefinition: LanguageDefinition = prism.languages[language || this.LANGUAGE];
+    const languageDefinition: LanguageDefinition = prism.languages[language || this.language()];
     if (!languageDefinition) return;
 
     this.$refs.prism.innerHTML = prism.highlight(this.$refs.input.value, languageDefinition, languageDefinition);
@@ -68,10 +71,11 @@ export default class CodeFlask extends Vue {
   public async displayWelcome(): Promise<void> {
     let message: string = welcome.trim();
 
-    message += `\n\n\`The current syntax highlighting is set to ${FRIENDLY_LANGUAGES[this.LANGUAGE]}!\`\n`;
+    message += `\n\n\`The current syntax highlighting is set to ${FRIENDLY_LANGUAGES[this.language()]}!\`\n`;
     message += `\`You can change this in Edit > Language.\``;
 
     this.$refs.input.value = message;
+    this.welcomeIsDisplayed = true;
 
     this.recalculateLineNumbers();
     this.highlight("markdown");
