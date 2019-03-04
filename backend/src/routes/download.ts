@@ -5,6 +5,20 @@ import File from "@interfaces/File";
 
 import findFile from "@utils/findFile";
 
+// Only allow these file types to be displayed in the browser instead of being downloaded
+const inlineTypes: string[] = [
+  "image/bmp",
+  "image/gif",
+  "image/jpeg",
+  "image/x-icon",
+  "image/svg+xml",
+
+  "audio/mpeg",
+  "audio/x-wav",
+
+  "video/mp4"
+];
+
 export default (req: Request, res: Response, next: NextFunction): void => {
   const id: string = req.params.id;
   if (!id) return next(new Error("No files were included!"));
@@ -16,7 +30,7 @@ export default (req: Request, res: Response, next: NextFunction): void => {
           "Content-Type": file.contentType,
           "Content-Length": file.length,
           "Content-Disposition": `${
-            file.contentType.startsWith("image/") ? "inline" : "attachment"
+            inlineTypes.includes(file.contentType) ? "inline" : "attachment"
           }; filename=${file.filename};`
         });
 
