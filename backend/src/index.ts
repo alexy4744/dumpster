@@ -57,11 +57,11 @@ async function createServer(app: Application): Promise<void> {
     [key: string]: Buffer | null
   } = {
     key: await fs.promises
-      .readFile("../certs/cert.key")
+      .readFile("./certs/cert.key")
       .catch((): null => null),
 
     cert: await fs.promises
-      .readFile("../certs/cert.pem")
+      .readFile("./certs/cert.pem")
       .catch((): null => null)
   };
 

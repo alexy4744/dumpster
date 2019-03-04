@@ -1,16 +1,11 @@
 /* Drop in replacement for console, might add logging */
 
-import ConsoleOptions from "@interfaces/ConsoleOptions";
-
 import { Console } from "console";
 import chalk from "chalk";
 
 export default class extends Console {
-  public constructor(options?: ConsoleOptions) {
-    super({
-      stdout: options && options.stdout ? options.stdout : process.stdout,
-      stderr: options && options.stderr ? options.stderr : process.stderr
-    });
+  public constructor() {
+    super(process.stdout, process.stderr);
   }
 
   private get prettyTimeStamp(): string {
