@@ -15,17 +15,6 @@ $colors: (
   "yellow": #FFEE99 // syntax.constat
 );
 
-// Create CSS classes based on the color map of names and hex codes
-@each $name, $value in $colors {
-  .color--#{$name} {
-    color: $value;
-  }
-
-  .background-color--#{$name} {
-    background-color: $value;
-  }
-}
-
 @function color($name) {
   @if map-has-key($colors, $name) {
     @return map-get($colors, $name);

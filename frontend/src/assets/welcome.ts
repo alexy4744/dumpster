@@ -1,19 +1,19 @@
 export default `
 # INTRODUCTION
 
-Hello there! This site is pretty much similar to Hastebin but offers both file and paste hosting.
+Hello there! This site is allows for fast and easy temporary paste and file storage/sharing.
 Files and pastes are not guaranteed to be stored forever and may be deleted at any time in order
 to reserve storage for new uploads.
 
 # HOW TO UPLOAD PASTES
 
 To upload a paste, just start typing and this message will dissappear automatically. Once done,
-you can simply press CTRL+S or right-click and press "Save" to retrieve a unique link for your paste.
-It may be shared to others, however, once the file expires, this link will stop working.
+you can simply press CTRL+S or click on "File" > "Save" at the toolbar. A unique link will be generated
+for your paste.
 
 # HOW TO UPLOAD FILES
 
-To upload a file, simply drag a file into this window, or right-click and press "Upload". Then
-select a file and click on "Open" and your file will start uploading. Once finished, same thing with pastes,
-you receive a unique link to your upload.
+To upload a file, simply drag a file here, or click on "File" > "New Upload" at the toolbar. Then
+choose a file and it will ll start uploading. You will receive a unique link to the file once the
+upload is complete.
 `;
