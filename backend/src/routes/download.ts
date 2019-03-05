@@ -10,6 +10,7 @@ const inlineTypes: string[] = [
   "image/bmp",
   "image/gif",
   "image/jpeg",
+  "image/png",
   "image/x-icon",
   "image/svg+xml",
 
