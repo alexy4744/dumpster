@@ -4,7 +4,7 @@
       Dumpster can also function as a ShareX custom uploader. It can be used for files, text and images.
       To get the configuration file, you can download it from
       <a
-        href="https://github.com/ShareX/CustomUploaders/blob/master/dumpster.miyako.xyz.sxcu"
+        href="https://github.com/ShareX/CustomUploaders/blob/master/miyako.xyz.sxcu"
       >here</a>.
     </p>
   </Modal>
